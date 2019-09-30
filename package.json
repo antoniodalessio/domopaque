@@ -2,9 +2,12 @@
   "name": "domopaque",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run tsc && node dist/index.js",
+    "build": "tsc",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -20,5 +23,10 @@
   "bugs": {
     "url": "https://github.com/antoniodalessio/domopaque/issues"
   },
-  "homepage": "https://github.com/antoniodalessio/domopaque#readme"
+  "homepage": "https://github.com/antoniodalessio/domopaque#readme",
+  "dependencies": {
+    "@types/node": "^12.7.8",
+    "express": "^4.17.1",
+    "typescript": "^3.6.3"
+  }
 }
