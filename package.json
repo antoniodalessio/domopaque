@@ -27,6 +27,7 @@
   "dependencies": {
     "@types/node": "^12.7.8",
     "express": "^4.17.1",
+    "node-dht-sensor": "^0.4.0",
     "typescript": "^3.6.3"
   }
 }
