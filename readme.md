@@ -1,1 +1,1 @@
-# An experimental building automation framework based on Raspberry PI, Arduino in nodejs server.
+# An experimental building automation framework based on Raspberry PI and Arduino in nodejs server.
