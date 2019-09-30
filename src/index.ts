@@ -1,5 +1,4 @@
 var express = require('express');
-const Gpio = require('onoff').Gpio;
 var sensorLib = require('node-dht-sensor');
 var app = express();
 
