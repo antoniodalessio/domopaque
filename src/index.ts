@@ -14,6 +14,8 @@ var GH = new GoogleHomeController();
 
 app.get('/google-home/:msg', function (req, res) {
   GH.speak(req.params.msg)
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({msg: req.params.msg}));
 });
 
 
