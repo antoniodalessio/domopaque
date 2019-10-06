@@ -30,5 +30,8 @@
     "node-dht-sensor": "^0.4.0",
     "node-googlehome": "0.0.7",
     "typescript": "^3.6.3"
+  },
+  "devDependencies": {
+    "axios": "^0.19.0"
   }
 }

@@ -1,5 +1,6 @@
 var express = require('express');
 var sensorLib = require('node-dht-sensor');
+const axios = require('axios');
 
 
 import GoogleHomeController from './controller/GoogleHome.controller'
@@ -43,7 +44,18 @@ setInterval(function() {
 }, 2000);
 
 
-app.get('/temp-umidity', function (req, res) {
+app.get('/temp-umidity', async function (req, res) {
+
+  let dataVeranda = await axios.get('http://192.168.1.10/ping')
+
+  let data = {
+    veranda: dataVeranda,
+    soggiorno: {
+      temperature: temperature,
+      umidity: umidity
+    }
+  }
+
   res.setHeader('Content-Type', 'application/json');
-  res.send(JSON.stringify({temperature: temperature, umidity: umidity}));
+  res.send(JSON.stringify(data));
 });
