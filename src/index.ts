@@ -46,7 +46,7 @@ setInterval(function() {
 
 app.get('/temp-umidity', async function (req, res) {
 
-  let dataVeranda = await axios.get('http://192.168.1.10/ping')
+  let dataVeranda = await axios.get('http://192.168.1.10:3005/ping')
 
   let data = {
     veranda: dataVeranda,
