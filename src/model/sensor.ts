@@ -1,6 +1,6 @@
 interface Sensor {
     name: string,
-    type: string,
+    type: any,
     value?: any,
     pin?: number,
     code?: string,

@@ -7,7 +7,7 @@ export const config = {
 			color: 'blue',
 			sensors: [
 				{
-					type: 'dht11',
+					type: 11,
 					pin: 4
 				}
 			]
