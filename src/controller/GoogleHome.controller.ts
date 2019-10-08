@@ -1,6 +1,5 @@
 const GoogleHome = require('node-googlehome')
 
-//import GoogleHome from 'node-googlehome'
 
 export default class GoogleHomeController {
     
