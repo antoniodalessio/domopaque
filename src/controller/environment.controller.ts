@@ -26,6 +26,11 @@ export default class EnvironmentController {
           pin: sensor.pin,
           type: sensor.type,
         }
+
+        if (!sensorLib.initialize(sensor.type, sensor.pin)) {
+          console.warn('Failed to initialize sensor');
+        }
+
         this.sensors.push(sens)
       });
     }
@@ -72,25 +77,21 @@ export default class EnvironmentController {
       name: 'raspberry'
     }
 
-    if (!sensorLib.initialize(this.sensors[0].type, this.sensors[0].pin)) {
-      console.warn('Failed to initialize sensor');
-    }else{
-      let readout = sensorLib.read();
-      let temperature = readout.temperature;
-      let umidity = readout.humidity;
-      this.sensors[0] = {
-        name: 'temperature',
-        type: "temperature",
-        value: temperature,
-        timestamp: Date.now()
-      }
+    let readout = sensorLib.read();
+    let temperature = readout.temperature;
+    let umidity = readout.humidity;
+    this.sensors[0] = {
+      name: 'temperature',
+      type: "temperature",
+      value: temperature,
+      timestamp: Date.now()
+    }
 
-      this.sensors[1] = {
-        name: 'umidity',
-        type: "umidity",
-        value: umidity,
-        timestamp: Date.now()
-      }
+    this.sensors[1] = {
+      name: 'umidity',
+      type: "umidity",
+      value: umidity,
+      timestamp: Date.now()
     }
 
     devices[0].sensors = this.sensors  
