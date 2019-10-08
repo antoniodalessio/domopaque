@@ -2,7 +2,7 @@ import Environment from '../model/environment'
 import Device from '../model/device';
 import Sensor from '../model/sensor';
 
-//var sensorLib = require('node-dht-sensor');
+var sensorLib = require('node-dht-sensor');
 
 const axios = require('axios');
 
@@ -72,19 +72,26 @@ export default class EnvironmentController {
       name: 'raspberry'
     }
 
-    //type 11 or 22
-    /*this.sensors.forEach((sensor) => {
-      if (!sensorLib.initialize(sensor.type, sensor.pin)) {
-        console.warn('Failed to initialize sensor');
-        let readout = sensorLib.read();
-        let temperature = readout.temperature;
-        let umidity = readout.humidity;
-        sensor.value = {
-          temperature,
-          umidity
-        }
+    if (!sensorLib.initialize(this.sensors[0].type, this.sensors[0].pin)) {
+      console.warn('Failed to initialize sensor');
+    }else{
+      let readout = sensorLib.read();
+      let temperature = readout.temperature;
+      let umidity = readout.humidity;
+      this.sensors[0] = {
+        name: 'temperature',
+        type: "temperature",
+        value: temperature,
+        timestamp: Date.now()
       }
-    })*/
+
+      this.sensors[1] = {
+        name: 'umidity',
+        type: "umidity",
+        value: umidity,
+        timestamp: Date.now()
+      }
+    }
 
     devices[0].sensors = this.sensors  
 
