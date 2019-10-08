@@ -1,14 +1,22 @@
-export default const config = {
+export const config = {
 	environments: [
 		{
 			name: 'soggiorno',
-			devicesip: '',
-			type: 'master'
+			ips: '',
+			type: 'master',
+			color: 'blue',
+			sensors: [
+				{
+					type: 'dht11',
+					pin: 4
+				}
+			]
 		},
 		{
 			name: 'veranda',
-			devicesip: ['192.168.1.10'],
-			type: 'slave'
+			ips: ['192.168.1.10'],
+			type: 'slave',
+			color: 'purple'
 		},
 	]
 }

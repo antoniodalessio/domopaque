@@ -1,9 +1,11 @@
 interface Sensor {
     name: string,
     type: string,
-    value: string,
-    state: boolean,
-    timestamp: string
+    value?: any,
+    pin?: number,
+    code?: string,
+    state?: boolean,
+    timestamp?: number
 }
 
 export default Sensor;
