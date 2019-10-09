@@ -4,7 +4,7 @@ export const config = {
 			name: 'soggiorno',
 			ips: '',
 			type: 'master',
-			color: 'blue',
+			color: 'green',
 			sensors: [
 				{
 					type: 11,
@@ -17,6 +17,12 @@ export const config = {
 			ips: ['192.168.1.10'],
 			type: 'slave',
 			color: 'purple'
+		},
+		{
+			name: 'corridoio_piano_secondo',
+			ips: ['192.168.1.11'],
+			type: 'slave',
+			color: 'yellow'
 		},
 	]
 }
