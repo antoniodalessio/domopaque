@@ -11,7 +11,7 @@ var app = express();
 let environments:Environment[] = [];
 let environmentsController = {}
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.listen(3001, async function () {
   console.log('Server Running on port 3001!');
