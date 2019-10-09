@@ -36,11 +36,12 @@ async function createEnvironments() {
 
 function createRoutes() {
   
-  app.get('/google-home/:msg', function (req, res) {
+  app.post('/google-home', function (req, res) {
+    let msg = req.body.msg;
     let GH = new GoogleHomeController();
-    GH.speak(req.params.msg)
+    GH.speak(msg)
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({msg: req.params.msg}));
+    res.send(JSON.stringify({msg}));
   });
   
   app.get('/environments', function(req, res) {
