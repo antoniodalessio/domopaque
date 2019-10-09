@@ -1,5 +1,5 @@
 var express = require('express');
-const axios = require('axios');
+var bodyParser = require("body-parser");
 
 
 import GoogleHomeController from './controller/GoogleHome.controller'
@@ -10,6 +10,8 @@ import Environment from './model/environment'
 var app = express();
 let environments:Environment[] = [];
 let environmentsController = {}
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.listen(3001, async function () {
   console.log('Server Running on port 3001!');
@@ -37,6 +39,7 @@ async function createEnvironments() {
 function createRoutes() {
   
   app.post('/google-home', function (req, res) {
+    console.log(req)
     let msg = req.body.msg;
     let GH = new GoogleHomeController();
     GH.speak(msg)
