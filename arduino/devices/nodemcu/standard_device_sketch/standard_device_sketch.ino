@@ -31,6 +31,10 @@ float Humidity;
 
 String ip;
 
+int magneticSensorPin = 4;
+int buttonState = 0;
+
+
 ESP8266WebServer server(3005);
 
 String IpAddress2String(const IPAddress& ipAddress)
@@ -76,7 +80,7 @@ void handlePing() {
     message += "\"" + String(h) + "\",";
 
     message += " \"deviceName\":";
-    message += " \"corridoio_piano_secondo\",";
+    message += " \"corridoio_piano_primo\",";
 
     message += " \"ip\":";
     message += "\"" + ip + "\"";
@@ -87,7 +91,23 @@ void handlePing() {
   server.send(200, "application/json", message);
 }
 
+void magneticSensor() {
+  buttonState = digitalRead(magneticSensorPin);
+  if (buttonState == HIGH) {
+     Serial.println("high");
+     Serial.println(buttonState);
+  } else {
+    Serial.println("low");
+     Serial.println(buttonState);
+  }
+ 
+  //delay(1000);
+}
+
 void setup() {
+  //pinMode(magneticSensorPin, INPUT);
+  pinMode(magneticSensorPin,INPUT_PULLUP);  
+  
   Serial.begin(9600);
   setupWifi();
   dht.begin();
@@ -99,4 +119,5 @@ void setup() {
 
 void loop() {
   server.handleClient();
+  //magneticSensor();
 }

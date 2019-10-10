@@ -19,13 +19,12 @@ app.listen(3001, async function () {
 });
 
 async function initApp() {
-  //setInterval(() => {createEnvironments()}, 1000 * 60 * 2)
   await createEnvironments();
   createRoutes();
 }
 
 async function createEnvironments() {
-  
+  environmentsController = {}
   for (const environment of config.environments) {
     let environmentController = new EnvironmentController(environment)
     environmentsController[environment.name] = environmentController
@@ -59,6 +58,17 @@ function createRoutes() {
     }else{
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({error: 'no environment found'}));
+    }
+  });
+
+  app.get('/refresh', async function(req, res) {
+    try {
+      await createEnvironments()
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ msg: 'ok' }));
+    }catch{
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ msg: 'ko' }));
     }
   });
   
