@@ -7,3 +7,91 @@ The sensors and actuators can sometimes be embedded in the controller. An exampl
 ## How it works?
 Most of devices are implements on nodemcu esp while for server has been used raspberry PI.
 When the server starts, ping devices ip readed in the configuration files and devices reply with information to server about its sensors and actuators. If any device doesn't responding, server act fault tolerance and doesn't crash.
+
+Example
+
+{
+    "environments": [
+        {
+            "name": "soggiorno",
+            "color": "green",
+            "type": "master",
+            "ips": "",
+            "devices": [
+                {
+                    "name": "raspberry",
+                    "sensors": [
+                        {
+                            "name": "temperature",
+                            "type": "temperature",
+                            "value": 21,
+                            "timestamp": 1570715032950
+                        },
+                        {
+                            "name": "umidity",
+                            "type": "umidity",
+                            "value": 74,
+                            "timestamp": 1570715032950
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "veranda",
+            "color": "purple",
+            "type": "slave",
+            "ips": [
+                "192.168.1.10"
+            ],
+            "devices": [
+                {
+                    "name": "veranda_192.168.1.10",
+                    "ip": "192.168.1.10",
+                    "sensors": [
+                        {
+                            "name": "veranda_192.168.1.10_temperature",
+                            "type": "temperature",
+                            "value": "23.70",
+                            "timestamp": 1570719554557
+                        },
+                        {
+                            "name": "veranda_192.168.1.10_umidity",
+                            "type": "umidity",
+                            "value": "51.00",
+                            "timestamp": 1570719554558
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "corridoio_piano_secondo",
+            "color": "yellow",
+            "type": "slave",
+            "ips": [
+                "192.168.1.11"
+            ],
+            "devices": [
+                {
+                    "name": "corridoio_piano_secondo_192.168.1.11",
+                    "ip": "192.168.1.11",
+                    "sensors": [
+                        {
+                            "name": "corridoio_piano_secondo_192.168.1.11_temperature",
+                            "type": "temperature",
+                            "value": "19.90",
+                            "timestamp": 1570715050487
+                        },
+                        {
+                            "name": "corridoio_piano_secondo_192.168.1.11_umidity",
+                            "type": "umidity",
+                            "value": "76.00",
+                            "timestamp": 1570715050487
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
