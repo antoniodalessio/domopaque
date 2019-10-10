@@ -5,5 +5,5 @@ A device that makes decisions is usually called a controller. Its biological equ
 The sensors and actuators can sometimes be embedded in the controller. An example of a simple controller with embedded sensor and actuator is a bimetallic room thermostat. It senses the room temperature, compares it against what the occupants set as comfortable, and then switches On and Off heating or cooling equipment to maintain the temperature acceptable without damaging or wearing unnecessarily the equipment. A more sophisticated thermostat would also keep track of time and detect if the room is occupied to then use different setpoints, and even sense and control humidity.
 
 ## How it works?
-Most of devices are implements on nodemcu esp while for server a raspberry PI.
+Most of devices are implements on nodemcu esp while for server has been used raspberry PI.
 When the server starts, ping devices ip readed in the configuration files and devices reply with information to server about its sensors and actuators. If any device doesn't responding, server act fault tolerance and doesn't crash.
