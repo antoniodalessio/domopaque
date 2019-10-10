@@ -1,4 +1,5 @@
 export const config = {
+	fetchTimeout: 4000,
 	environments: [
 		{
 			name: 'soggiorno',

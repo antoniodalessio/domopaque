@@ -39,7 +39,6 @@ async function createEnvironments() {
 function createRoutes() {
   
   app.post('/google-home', function (req, res) {
-    console.log(req.body)
     let msg = req.body.msg;
     let GH = new GoogleHomeController();
     GH.speak(msg)

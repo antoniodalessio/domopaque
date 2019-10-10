@@ -7,7 +7,13 @@ interface Device {
     ip?: string,
     sensors?: Sensor[],
     actuators?: Actuator[],
-    availableEndpoint?: string[], 
+    availableEndpoint?: string[],
+    error?: Error
+}
+
+interface Error {
+    msg: string
+    code: number
 }
 
 export default Device;
