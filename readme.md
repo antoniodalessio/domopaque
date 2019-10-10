@@ -9,7 +9,7 @@ Most of devices are implements on nodemcu esp while for server has been used ras
 When the server starts, ping devices ip readed in the configuration files and devices reply with information to server about its sensors and actuators. If any device doesn't responding, server act fault tolerance and doesn't crash.
 
 Example
-
+```json
 {
     "environments": [
         {
@@ -95,3 +95,4 @@ Example
         }
     ]
 }
+```
