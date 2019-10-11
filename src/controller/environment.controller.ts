@@ -78,6 +78,7 @@ export default class EnvironmentController implements Environment{
         name: deviceName,
         temperature: res.temperature.toFixed(1),
         umidity: res.humidity.toFixed(1),
+        deviceName,
         ip: deviceName
       }
     } catch (e){
@@ -103,6 +104,7 @@ export default class EnvironmentController implements Environment{
       console.log("else", deviceData)
       this.devicesController[deviceName].refresh(deviceData)
       let pos = this.devices.map(function(e) { return e.name }).indexOf(deviceName);
+      console.log("pos", pos)
       this.devices[pos] = this.devicesController[deviceName].getData()
     }
 
