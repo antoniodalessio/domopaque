@@ -68,7 +68,8 @@ export default class EnvironmentController implements Environment{
 
   async createMasterSensors() {
 
-    let deviceName = "raspberry.device"
+    let ip = 'server.raspberry'
+    let deviceName = `${this.name}_${ip}`
     let deviceData = {};
     
     try {
@@ -79,14 +80,14 @@ export default class EnvironmentController implements Environment{
         temperature: res.temperature.toFixed(1),
         umidity: res.humidity.toFixed(1),
         deviceName,
-        ip: deviceName
+        ip
       }
     } catch (e){
 
       deviceData = {
         name: deviceName,
         deviceName,
-        ip: deviceName,
+        ip,
         error: { 
           msg: `No sensors connected ${e}`,
           code: 404,
