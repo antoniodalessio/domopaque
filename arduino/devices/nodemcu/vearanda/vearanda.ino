@@ -32,8 +32,6 @@ const int sensorMin = 0;
 const int sensorMax = 1024;
 int sensorRainDropPin = A0;
 int enableRainDrop = 13;
-int sensorRaindDropValue = 0;
-String sensorRaindDropMsg = "not_raining";
 
 
 
@@ -82,7 +80,7 @@ void handlePing() {
     message += "\"" + String(h) + "\",";
 
     message += " \"raindrop\":";
-    message += "\"" + sensorRaindDropMsg + "\",";
+    message += "\"" + raindropSensor() + "\",";
 
     message += " \"deviceName\":";
     message += " \"veranda\",";
@@ -113,36 +111,42 @@ void setupRaindropSensor() {
   pinMode(enableRainDrop, OUTPUT);
 }
 
-void raindropSensor() {
-  delay(500);
-  sensorRaindDropValue = analogRead(sensorRainDropPin);
+String raindropSensor() {
+  int sensorRaindDropValue = analogRead(sensorRainDropPin);
   sensorRaindDropValue = map(sensorRaindDropValue, sensorMin, sensorMax, 0, 3);
+  String sensorRaindDropMsg = "";
 
   Serial.println(sensorRaindDropValue); 
-  // range value:
+  
   switch (sensorRaindDropValue) {
-   case 0:    // Sensor getting wet
+   case 0:
       Serial.println("Flood");
       sensorRaindDropMsg = "flood";
       break;
-   case 1:    // Sensor getting wet
+   case 1:
       Serial.println("Rain Warning");
       sensorRaindDropMsg = "rain_warning";
       break;
-   case 2:    // Sensor dry 
+   case 2:
       Serial.println("Not Raining");
       sensorRaindDropMsg = "not_raining";
       break;
+    case 3:
+      Serial.println("very_dry_not_raining");
+      sensorRaindDropMsg = "very_dry_not_raining";
+      break;
     }
-    
-    delay(1000);
+
+    Serial.println(sensorRaindDropMsg); 
+
+    return sensorRaindDropMsg;
 
 }
 
 void setup() {
   setupRaindropSensor();
   
-  pinMode(magneticSensorPin,INPUT_PULLUP);  
+  //pinMode(magneticSensorPin,INPUT_PULLUP);  
   
   Serial.begin(9600);
   setupWifi();
@@ -156,5 +160,5 @@ void setup() {
 void loop() {
   server.handleClient();
   //magneticSensor();
-  raindropSensor();
+  //raindropSensor();
 }

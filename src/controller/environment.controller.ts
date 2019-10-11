@@ -88,13 +88,15 @@ export default class EnvironmentController implements Environment{
       deviceData = {
         name: deviceName,
         temperature: res.temperature.toFixed(1),
-        umidity: res.humidity.toFixed(1)
+        umidity: res.humidity.toFixed(1),
+        ip: deviceName
       }
     } catch (e){
 
       deviceData = {
         name: deviceName,
         deviceName,
+        ip: deviceName,
         error: { 
           msg: `No sensors connected ${e}`,
           code: 404,
