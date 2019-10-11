@@ -1,7 +1,8 @@
 export const config = {
 	fetchTimeout: 4000,
+	devicePort: '3005',
 	environments: [
-		{
+		/*{
 			name: 'soggiorno',
 			ips: '',
 			type: 'master',
@@ -12,7 +13,7 @@ export const config = {
 					pin: 4
 				}
 			]
-		},
+		},*/
 		{
 			name: 'veranda',
 			ips: ['192.168.1.10'],
@@ -20,7 +21,7 @@ export const config = {
 			color: 'purple'
 		},
 		{
-			name: 'corridoio_piano_secondo',
+			name: 'corridoio_piano_primo',
 			ips: ['192.168.1.11'],
 			type: 'slave',
 			color: 'yellow'

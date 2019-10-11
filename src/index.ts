@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require("body-parser");
 
+import "reflect-metadata";
 
 import GoogleHomeController from './controller/GoogleHome.controller'
 import EnvironmentController from './controller/environment.controller'
@@ -28,6 +29,7 @@ async function createEnvironments() {
   for (const environment of config.environments) {
     let environmentController = new EnvironmentController(environment)
     environmentsController[environment.name] = environmentController
+    await environmentController.createDevices()
     let data = await environmentController.getData()
     environments.push(data)
   }
@@ -52,6 +54,7 @@ function createRoutes() {
   
   app.get('/environments/:name', async function(req, res) {
     if (environmentsController[req.params.name]) {
+      await environmentsController[req.params.name].refresh()
       let data = await environmentsController[req.params.name].getData()
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(data));

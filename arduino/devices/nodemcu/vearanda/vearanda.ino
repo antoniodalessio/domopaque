@@ -13,7 +13,6 @@
 const char* ssid     = STASSID;
 const char* password = STAPSK;
 
-const char* host = "192.168.1.6/send";
 const uint16_t port = 3005;
 
 DHT dht(DHT11_PIN, DHTTYPE);
@@ -24,10 +23,10 @@ float Humidity;
 String ip;
 
 // MAgnetic sensor
-/*
+
 int magneticSensorPin = 4;
 int buttonState = 0;
-*/
+
 
 const int sensorMin = 0;
 const int sensorMax = 1024;
@@ -38,7 +37,7 @@ String sensorRaindDropMsg = "not_raining";
 
 
 
-ESP8266WebServer server(3005);
+ESP8266WebServer server(port);
 
 String IpAddress2String(const IPAddress& ipAddress)
 {
@@ -86,7 +85,7 @@ void handlePing() {
     message += "\"" + sensorRaindDropMsg + "\",";
 
     message += " \"deviceName\":";
-    message += " \"corridoio_piano_primo\",";
+    message += " \"veranda\",";
 
     message += " \"ip\":";
     message += "\"" + ip + "\"";
@@ -98,16 +97,16 @@ void handlePing() {
 }
 
 void magneticSensor() {
-  /*buttonState = digitalRead(magneticSensorPin);
+  buttonState = digitalRead(magneticSensorPin);
   if (buttonState == HIGH) {
      Serial.println("high");
      Serial.println(buttonState);
   } else {
     Serial.println("low");
      Serial.println(buttonState);
-  }*/
+  }
  
-  //delay(1000);
+  delay(1000);
 }
 
 void setupRaindropSensor() {
@@ -142,8 +141,8 @@ void raindropSensor() {
 
 void setup() {
   setupRaindropSensor();
-  //pinMode(magneticSensorPin, INPUT);
-  //pinMode(magneticSensorPin,INPUT_PULLUP);  
+  
+  pinMode(magneticSensorPin,INPUT_PULLUP);  
   
   Serial.begin(9600);
   setupWifi();
