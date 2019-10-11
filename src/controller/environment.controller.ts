@@ -29,17 +29,6 @@ export default class EnvironmentController implements Environment{
     this.type =  environment.type,
 		this.ips =  environment.ips
     
-    /*if (environment.type == 'master') {
-      environment.sensors.forEach(sensor => {
-        let sens = {
-          name: '',
-          pin: sensor.pin,
-          type: sensor.type,
-        }
-
-        this.sensors.push(sens)
-      });
-    }*/
   }
 
   async createSlaveDevices () {
@@ -83,7 +72,7 @@ export default class EnvironmentController implements Environment{
     let deviceData = {};
     
     try {
-      const res = await sensorLib.read(11, 4);
+      let res = await sensorLib.read(11, 4);
       
       deviceData = {
         name: deviceName,
@@ -105,11 +94,13 @@ export default class EnvironmentController implements Environment{
     }
 
     if (!this.devicesController[deviceName]){
+      console.log("if", deviceData)
       let deviceController:DeviceController = new DeviceController(await this.getData(), deviceData);
       this.devicesController[deviceName] = deviceController;
       let device:Device = this.devicesController[deviceName].getData()
       this.devices.push(device)
     }else{
+      console.log("else", deviceData)
       this.devicesController[deviceName].refresh(deviceData)
       let pos = this.devices.map(function(e) { return e.name }).indexOf(deviceName);
       this.devices[pos] = this.devicesController[deviceName].getData()

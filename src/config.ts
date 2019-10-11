@@ -4,7 +4,7 @@ export const config = {
 	environments: [
 		{
 			name: 'soggiorno',
-			ips: '',
+			ips: [],
 			type: 'master',
 			color: 'green',
 			sensors: [
