@@ -7,11 +7,15 @@ var fcm = new FCM(serverKey);
 
 const Gpio = require('onoff').Gpio;
 const relais = new Gpio(4, 'out');
-let relaisValue = true;
+let relaisValue = 1;
 relais.writeSync(relaisValue);
 
 setInterval(() => {
-  relaisValue = !relaisValue
+  if(relaisValue == 1) {
+    relaisValue = 0;
+  }else{
+    relaisValue = 1;
+  }
   relais.writeSync(relaisValue);
 }, 5000)
 
