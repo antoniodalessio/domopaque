@@ -62,10 +62,12 @@ async function createEnvironments() {
 
 function sendNotificationToAll() {
 
-  let token = users[0].fcmToken.token;
+  let tokens = users.map((user) => {
+    return user.fcmToken.token;
+  })// users[0].fcmToken.token;
 
   let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-        to: token, 
+        to: tokens, 
         collapse_key: 'your_collapse_key',
         
         notification: {
