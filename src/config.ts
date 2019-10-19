@@ -7,6 +7,8 @@ export const config = {
 			ips: [],
 			type: 'master',
 			color: 'green',
+			inside: true,
+			floor: 0,
 			sensors: [
 				{
 					type: 11,
@@ -18,13 +20,17 @@ export const config = {
 			name: 'veranda',
 			ips: ['192.168.1.10'],
 			type: 'slave',
-			color: 'purple'
+			color: 'purple',
+			inside: false,
+			floor: 0,
 		},
 		{
 			name: 'corridoio_piano_primo',
 			ips: ['192.168.1.11'],
 			type: 'slave',
-			color: 'yellow'
+			color: 'yellow',
+			inside: true,
+			floor: 1,
 		},
 	]
 }

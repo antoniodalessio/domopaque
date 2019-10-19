@@ -27,9 +27,11 @@
   "dependencies": {
     "@types/node": "^12.7.8",
     "express": "^4.17.1",
+    "fcm-node": "^1.5.2",
     "inversify": "^5.0.1",
     "node-dht-sensor": "^0.4.0",
     "node-googlehome": "0.0.7",
+    "rpi-gpio": "^2.1.5",
     "typescript": "^3.6.3"
   },
   "devDependencies": {
