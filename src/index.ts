@@ -6,9 +6,9 @@ var fcm = new FCM(serverKey);
 
 var gpiop = require('rpi-gpio').promise;
 
-gpiop.setup(17, gpiop.DIR_OUT)
+gpiop.setup(4, gpiop.DIR_OUT)
     .then(() => {
-        return gpiop.write(17, true)
+        return gpiop.write(4, true)
     })
     .catch((err) => {
         console.log('Error: ', err.toString())
