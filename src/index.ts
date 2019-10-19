@@ -7,7 +7,13 @@ var fcm = new FCM(serverKey);
 
 const Gpio = require('onoff').Gpio;
 const relais = new Gpio(4, 'out');
-relais.writeSync(1);
+let relaisValue = true;
+relais.writeSync(relaisValue);
+
+setInterval(() => {
+  relaisValue = !relaisValue
+  relais.writeSync(relaisValue);
+}, 5000)
 
 process.on('SIGINT', _ => {
   relais.unexport();
