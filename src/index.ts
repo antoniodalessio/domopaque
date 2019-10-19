@@ -4,6 +4,16 @@ var FCM = require('fcm-node');
 var serverKey = 'AAAAzrR9y9g:APA91bGRH3oO0jYrby24Zgou-If_gmynlD4uOHuaKJ4terNeIr9pP90J7Ur4lXCs-F0Mbw2SZR5m3FCKINXvnwNq4bcJ6P5B_UkJqopfO5qB1BqAylGF86yyi8kasl_I0M865pkDCzvQ';
 var fcm = new FCM(serverKey);
 
+var gpiop = require('rpi-gpio').promise;
+
+gpiop.setup(14, gpiop.DIR_OUT)
+    .then(() => {
+        return gpiop.write(14, true)
+    })
+    .catch((err) => {
+        console.log('Error: ', err.toString())
+    })
+
 import "reflect-metadata";
 
 import GoogleHomeController from './controller/GoogleHome.controller'
