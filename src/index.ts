@@ -89,10 +89,16 @@ function sendNotificationToAll() {
     });
 }
 
+function removeDuplicates(myArr, prop) {
+    return myArr.filter((obj, pos, arr) => {
+        return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+    });
+}
+
 
 function createRoutes() {
   
-  app.post('/google-home', function (req, res) {
+  app.post('/api/google-home', function (req, res) {
     let msg = req.body.msg;
     let GH = new GoogleHomeController();
     GH.speak(msg)
@@ -100,18 +106,16 @@ function createRoutes() {
     res.send(JSON.stringify({msg}));
   });
 
-  app.post('/store-user', function (req, res) {
-    console.log("store-user")
+  app.post('/api/store-user', function (req, res) {
     let user = req.body.user;
-    console.log("userdeviceID", user.deviceId)
     users.push(user);
-    console.log("users: ", users)
+    users = removeDuplicates(users, "deviceId")
     sendNotificationToAll()
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({user}));
   });
   
-  app.get('/environments', function(req, res) {
+  app.get('/api/environments', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ environments }));
   });
@@ -128,7 +132,7 @@ function createRoutes() {
     }
   });
 
-  app.get('/refresh', async function(req, res) {
+  app.get('/api/refresh', async function(req, res) {
     try {
       await createEnvironments()
       res.setHeader('Content-Type', 'application/json');
@@ -139,12 +143,12 @@ function createRoutes() {
     }
   });
   
-  app.get('/devices', function(req, res) {
+  app.get('/api/devices', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ environments }));
   });
   
-  app.get('/devices/:name', function(req, res) {
+  app.get('/api/devices/:name', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ environments }));
   });
