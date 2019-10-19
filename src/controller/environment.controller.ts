@@ -18,6 +18,7 @@ export default class EnvironmentController implements Environment{
   color: string;
   ips: [];
   lastTimestampPing: number
+  inside: boolean
   private _devices:Device[] = [];
   private _devicesController = {};
 
@@ -28,6 +29,7 @@ export default class EnvironmentController implements Environment{
 		this.color = environment.color,
     this.type =  environment.type,
 		this.ips =  environment.ips
+    this.inside = environment.inside
     
   }
 
@@ -96,16 +98,13 @@ export default class EnvironmentController implements Environment{
     }
 
     if (!this.devicesController[deviceName]){
-      console.log("if", deviceData)
       let deviceController:DeviceController = new DeviceController(await this.getData(), deviceData);
       this.devicesController[deviceName] = deviceController;
       let device:Device = this.devicesController[deviceName].getData()
       this.devices.push(device)
     }else{
-      console.log("else", deviceData)
       this.devicesController[deviceName].refresh(deviceData)
       let pos = this.devices.map(function(e) { return e.name }).indexOf(deviceName);
-      console.log("pos", pos)
       this.devices[pos] = this.devicesController[deviceName].getData()
     }
 
@@ -125,7 +124,8 @@ export default class EnvironmentController implements Environment{
       type: this.type,
       color: this.color,
       ips: this.ips,
-      devices: this.devices
+      devices: this.devices,
+      inside: this.inside
     }
   }
 
