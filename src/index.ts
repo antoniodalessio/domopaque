@@ -63,9 +63,8 @@ async function createEnvironments() {
 function sendNotificationToAll() {
 
   let token = users[0].fcmToken.token;
-  console.log()
 
-  var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+  let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
         to: token, 
         collapse_key: 'your_collapse_key',
         
@@ -120,7 +119,7 @@ function createRoutes() {
     res.send(JSON.stringify({ environments }));
   });
   
-  app.get('api/environments/:name', async function(req, res) {
+  app.get('/api/environments/:name', async function(req, res) {
     if (environmentsController[req.params.name]) {
       await environmentsController[req.params.name].refresh()
       let data = await environmentsController[req.params.name].getData()
