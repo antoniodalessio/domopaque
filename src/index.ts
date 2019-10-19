@@ -60,14 +60,11 @@ async function createEnvironments() {
 }
 
 
-function sendNotificationToAll() {
+function sendNotificationToAll(token) {
 
-  let tokens = users.map((user) => {
-    return user.fcmToken.token;
-  })// users[0].fcmToken.token;
 
   let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-        to: tokens, 
+        to: token, 
         collapse_key: 'your_collapse_key',
         
         notification: {
@@ -111,7 +108,12 @@ function createRoutes() {
     let user = req.body.user;
     users.push(user);
     users = removeDuplicates(users, "deviceId")
-    sendNotificationToAll()
+    let tokens = users.map((user) => {
+      return user.fcmToken.token;
+    })
+    for (const token of tokens) {
+      sendNotificationToAll(token)
+    }
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({user}));
   });
