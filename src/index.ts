@@ -120,7 +120,7 @@ function createRoutes() {
     res.send(JSON.stringify({ environments }));
   });
   
-  app.get('/environments/:name', async function(req, res) {
+  app.get('api/environments/:name', async function(req, res) {
     if (environmentsController[req.params.name]) {
       await environmentsController[req.params.name].refresh()
       let data = await environmentsController[req.params.name].getData()
