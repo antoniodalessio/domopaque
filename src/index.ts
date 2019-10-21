@@ -19,9 +19,9 @@ var fcm = new FCM(serverKey);
 //   relais.writeSync(relaisValue);
 // }, 5000)
 
-process.on('SIGINT', _ => {
-  relais.unexport();
-});
+// process.on('SIGINT', _ => {
+//   relais.unexport();
+// });
 
 import "reflect-metadata";
 
