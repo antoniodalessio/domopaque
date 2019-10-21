@@ -5,19 +5,19 @@ var serverKey = 'AAAAzrR9y9g:APA91bGRH3oO0jYrby24Zgou-If_gmynlD4uOHuaKJ4terNeIr9
 var fcm = new FCM(serverKey);
 
 
-const Gpio = require('onoff').Gpio;
-const relais = new Gpio(17, 'out');
-let relaisValue = 1;
-relais.writeSync(relaisValue);
+// const Gpio = require('onoff').Gpio;
+// const relais = new Gpio(17, 'out');
+// let relaisValue = 1;
+// relais.writeSync(relaisValue);
 
-setInterval(() => {
-  if(relaisValue == 1) {
-    relaisValue = 0;
-  }else{
-    relaisValue = 1;
-  }
-  relais.writeSync(relaisValue);
-}, 5000)
+// setInterval(() => {
+//   if(relaisValue == 1) {
+//     relaisValue = 0;
+//   }else{
+//     relaisValue = 1;
+//   }
+//   relais.writeSync(relaisValue);
+// }, 5000)
 
 process.on('SIGINT', _ => {
   relais.unexport();
