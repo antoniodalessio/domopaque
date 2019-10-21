@@ -2,7 +2,7 @@ export const config = {
 	fetchTimeout: 4000,
 	devicePort: '3005',
 	environments: [
-		/*{
+		{
 			name: 'soggiorno',
 			ips: [],
 			type: 'master',
@@ -22,7 +22,7 @@ export const config = {
 				}
 			]
 
-		},*/
+		},
 		{
 			name: 'veranda',
 			ips: ['192.168.1.10'],
