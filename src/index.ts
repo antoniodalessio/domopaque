@@ -1,8 +1,4 @@
 var express = require('express');
-var bodyParser = require("body-parser");
-var FCM = require('fcm-node');
-var serverKey = 'AAAAzrR9y9g:APA91bGRH3oO0jYrby24Zgou-If_gmynlD4uOHuaKJ4terNeIr9pP90J7Ur4lXCs-F0Mbw2SZR5m3FCKINXvnwNq4bcJ6P5B_UkJqopfO5qB1BqAylGF86yyi8kasl_I0M865pkDCzvQ';
-var fcm = new FCM(serverKey);
 
 
 // const Gpio = require('onoff').Gpio;
@@ -23,17 +19,18 @@ var fcm = new FCM(serverKey);
 //   relais.unexport();
 // });
 
-import "reflect-metadata";
+//import "reflect-metadata";
 
+import HomeController from './controller/home.controller'
+import NotificationController from './controller/notification.controller'
 import GoogleHomeController from './controller/GoogleHome.controller'
-import EnvironmentController from './controller/environment.controller'
 import { config } from './config'
-import Environment from './model/environment'
 
 var app = express();
-let environments:Environment[] = [];
-let environmentsController = {}
 let users = [];
+
+let homeController: HomeController = new HomeController()
+let notificationCtrl: NotificationController = new NotificationController()
 
 app.use(express.json());
 
@@ -43,54 +40,8 @@ app.listen(3001, async function () {
 });
 
 async function initApp() {
-  await createEnvironments();
+  await homeController.create(config.environments)
   createRoutes();
-}
-
-async function createEnvironments() {
-  environmentsController = {}
-  for (const environment of config.environments) {
-    let environmentController = new EnvironmentController(environment)
-    environmentsController[environment.name] = environmentController
-    await environmentController.createDevices()
-    let data = await environmentController.getData()
-    environments.push(data)
-  }
-
-}
-
-
-function sendNotificationToAll(token) {
-
-
-  let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-        to: token, 
-        collapse_key: 'your_collapse_key',
-        
-        notification: {
-            title: 'Title of your push notification', 
-            body: 'Body of your push notification' 
-        },
-        
-        data: {  //you can send only notification or only data(or include both)
-            my_key: 'my value',
-            my_another_key: 'my another value'
-        }
-    };
-    
-    fcm.send(message, function(err, response){
-        if (err) {
-            console.log("Something has gone wrong!");
-        } else {
-            console.log("Successfully sent with response: ", response);
-        }
-    });
-}
-
-function removeDuplicates(myArr, prop) {
-    return myArr.filter((obj, pos, arr) => {
-        return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
-    });
 }
 
 
@@ -106,13 +57,12 @@ function createRoutes() {
 
   app.post('/api/store-user', function (req, res) {
     let user = req.body.user;
-    users.push(user);
-    users = removeDuplicates(users, "deviceId")
-    let tokens = users.map((user) => {
+    notificationCtrl.users.push(user);
+    let tokens = notificationCtrl.users.map((user) => {
       return user.fcmToken.token;
     })
     for (const token of tokens) {
-      sendNotificationToAll(token)
+      notificationCtrl.sendTo(token)
     }
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({user}));
@@ -120,13 +70,13 @@ function createRoutes() {
   
   app.get('/api/environments', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ environments }));
+    res.send(JSON.stringify({ environments: homeController.environments }));
   });
   
   app.get('/api/environments/:name', async function(req, res) {
-    if (environmentsController[req.params.name]) {
-      await environmentsController[req.params.name].refresh()
-      let data = await environmentsController[req.params.name].getData()
+    if (homeController.environmentsController[req.params.name]) {
+      await homeController.environmentsController[req.params.name].refresh()
+      let data = await homeController.environmentsController[req.params.name].getData()
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(data));
     }else{
@@ -137,7 +87,7 @@ function createRoutes() {
 
   app.get('/api/refresh', async function(req, res) {
     try {
-      await createEnvironments()
+      await homeController.create(config.environments)
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({ msg: 'ok' }));
     }catch{
@@ -148,11 +98,24 @@ function createRoutes() {
   
   app.get('/api/devices', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ environments }));
+    res.send(JSON.stringify({ }));
   });
   
   app.get('/api/devices/:name', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ environments }));
+    res.send(JSON.stringify({ }));
   });
+
+  app.get('/api/actuators', function (req, res) {
+
+  });
+
+  app.get('/api/actuators/:id', function (req, res) {
+
+  });
+
+  app.post('/api/actuators/:id/:value', function (req, res) {
+
+  });
+
 }

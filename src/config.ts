@@ -2,7 +2,7 @@ export const config = {
 	fetchTimeout: 4000,
 	devicePort: '3005',
 	environments: [
-		{
+		/*{
 			name: 'soggiorno',
 			ips: [],
 			type: 'master',
@@ -14,8 +14,15 @@ export const config = {
 					type: 11,
 					pin: 4
 				}
+			],
+			actuators: [
+				{
+					name: 'main_light',
+					type: 'rele'
+				}
 			]
-		},
+
+		},*/
 		{
 			name: 'veranda',
 			ips: ['192.168.1.10'],
