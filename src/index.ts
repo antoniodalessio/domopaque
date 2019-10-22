@@ -1,26 +1,5 @@
 var express = require('express');
 
-
-// const Gpio = require('onoff').Gpio;
-// const relais = new Gpio(17, 'out');
-// let relaisValue = 1;
-// relais.writeSync(relaisValue);
-
-// setInterval(() => {
-//   if(relaisValue == 1) {
-//     relaisValue = 0;
-//   }else{
-//     relaisValue = 1;
-//   }
-//   relais.writeSync(relaisValue);
-// }, 5000)
-
-// process.on('SIGINT', _ => {
-//   relais.unexport();
-// });
-
-//import "reflect-metadata";
-
 import HomeController from './controller/home.controller'
 import NotificationController from './controller/notification.controller'
 import GoogleHomeController from './controller/GoogleHome.controller'
@@ -30,6 +9,7 @@ var app = express();
 let users = [];
 
 let homeController: HomeController = new HomeController()
+let GHCtrl = new GoogleHomeController();
 let notificationCtrl: NotificationController = new NotificationController()
 
 app.use(express.json());
@@ -49,8 +29,7 @@ function createRoutes() {
   
   app.post('/api/google-home', function (req, res) {
     let msg = req.body.msg;
-    let GH = new GoogleHomeController();
-    GH.speak(msg)
+    GHCtrl.speak(msg)
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({msg}));
   });
@@ -107,15 +86,18 @@ function createRoutes() {
   });
 
   app.get('/api/actuators', function (req, res) {
-
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ }));
   });
 
   app.get('/api/actuators/:id', function (req, res) {
-
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ }));
   });
 
   app.post('/api/actuators/:id/:value', function (req, res) {
-
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ }));
   });
 
 }

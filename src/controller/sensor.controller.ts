@@ -7,14 +7,12 @@ class SensorController implements Sensor{
     type: string = '';
     private _value:any = '';
     private _device:Device;
-    private _sensorData;
 
-    constructor(device, sensorData) {
+    constructor(device, sensor) {
         this.device = device;
-        this.type = sensorData.key;
-        this.sensorData = sensorData;
-        this.name = `${device.name}_${sensorData.key}`
-        this.value = sensorData.value;
+        this.type = Object.keys(sensor)[0];
+        this.name = `${device.name}_${this.type}`
+        this.value = sensor[this.type]
     }
 
     getData() {
@@ -40,14 +38,6 @@ class SensorController implements Sensor{
 
     get device() {
         return this._device
-    }
-
-    set sensorData(sensorData) {
-        this._sensorData = sensorData;
-    }
-
-    get sensorData() {
-        return this._sensorData
     }
 }
 

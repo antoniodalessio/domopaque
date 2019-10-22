@@ -1,17 +1,23 @@
 import Device from './../model/device'
 import Sensor from './../model/sensor'
 import Environment from '../model/environment';
+import Actuator from '../model/actuator';
 import SensorController from './sensor.controller';
+import ActuatorController from './actuator.controller';
 
 class DeviceController implements Device{
     
     name: string = '';
     type: string = '';
     ip: string = '';
-    sensors: Sensor[] = [];
-    _environment: Environment;
-    _deviceData: any;
+    private _sensors: Sensor[] = [];
+    private _sensorControllers = [];
+    private _environment: Environment;
+    private _deviceData: any;
     error:any;
+
+    private _actuatorControllers = []
+    private _actuators: Actuator[] = []
 
     sensorTypes: string[] = ['temperature', 'umidity', 'raindrop'];
 
@@ -23,7 +29,8 @@ class DeviceController implements Device{
         if (deviceData.error) {
             this.error = deviceData.error
         }
-        this.setSensors() 
+        this.setSensors()
+        this.setActuators()
     }
 
     getData() {
@@ -41,17 +48,20 @@ class DeviceController implements Device{
     }
 
     setSensors() {
+
         this.sensors = []
-        Object.keys(this.deviceData).forEach((key) => {
-            if (this.sensorTypes.indexOf(key) != -1) {
-                let sensorData = {
-                    key,
-                    value: this._deviceData[key]
-                }
-                let sensorController = new SensorController(this.getData(), sensorData)
+
+        if (this.deviceData.sensors && this.deviceData.sensors.length > 0) {
+            for (let sensor of this.deviceData.sensors) {
+                let sensorController = new SensorController(this.getData(), sensor)
+                console.log("getDAta, sensor controller", sensorController.getData())
                 this.sensors.push(sensorController.getData())
             }
-        })
+        }
+    }
+
+    setActuators() {
+        this.actuators = []
     }
 
     refresh(deviceData) {
@@ -73,6 +83,38 @@ class DeviceController implements Device{
 
     get deviceData() {
         return this._deviceData;
+    }
+
+    get sensors() {
+        return this._sensors
+    }
+
+    set sensors(sensors) {
+        this._sensors = sensors
+    }
+
+    get actuators() {
+        return this._actuators
+    }
+
+    set actuators(actuators) {
+        this._actuators = actuators
+    }
+
+    set actuatorControllers(actuatorControllers) {
+        this._actuatorControllers = actuatorControllers;
+    }
+
+    get actuatorControllers() {
+        return this._actuatorControllers;
+    }
+
+    set sensorControllers(sensorControllers) {
+        this._sensorControllers = sensorControllers;
+    }
+
+    get sensorControllers() {
+        return this._sensorControllers;
     }
 }
 

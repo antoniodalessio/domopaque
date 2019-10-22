@@ -4,11 +4,11 @@ import EnvironmentController from "./environment.controller"
 
 class HomeController {
 
-  _environmentsController
-  _environments: Environment[] 
-  _devices
-  _sensors
-  _actuators
+  private _environmentsController
+  private _environments: Environment[] 
+  private _devices
+  private _sensors
+  private _actuators
 
   constructor() {
     this.reset()

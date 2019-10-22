@@ -1,5 +1,4 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 #include "DHT.h"
 #define DHTTYPE DHT11
@@ -22,7 +21,7 @@ float Humidity;
 
 String ip;
 
-// MAgnetic sensor
+// Magnetic sensor
 
 int magneticSensorPin = 4;
 int buttonState = 0;
@@ -67,27 +66,63 @@ void setupWifi() {
   Serial.println(ip);
 }
 
+
+void handleTemperature() {
+  float Temperature = dht.readTemperature();
+  String message = "{";
+  message += " \"value\":";
+  message += "\"" + String(Temperature) + "\"";
+  message += " }";
+  server.send(200, "application/json", message);
+}
+
+void handleHumidity() {
+  float h = dht.readHumidity();
+  String message = "{";
+  message += " \"value\":";
+  message += "\"" + String(h) + "\"";
+  message += " }";
+  server.send(200, "application/json", message);
+}
+
+void handleRainSensor() {
+  String message = "{";
+  message += " \"value\":";
+  message += "\"" + raindropSensor() + "\"";
+  message += " }";
+  server.send(200, "application/json", message);
+}
+
 void handlePing() {
 
   float Temperature = dht.readTemperature();
   float h = dht.readHumidity();
 
   String message = "{ ";
-    message += " \"temperature\":";
-    message += "\"" + String(Temperature) + "\",";
-
-    message += " \"umidity\":";
-    message += "\"" + String(h) + "\",";
-
-    message += " \"raindrop\":";
-    message += "\"" + raindropSensor() + "\",";
 
     message += " \"deviceName\":";
     message += " \"veranda\",";
 
     message += " \"ip\":";
-    message += "\"" + ip + "\"";
+    message += "\"" + ip + "\",";
+
+    message += " \"sensors\":[";
+
+    message += "{\"temperature\":";
+    message += "\"" + String(Temperature) + "\"},";
+
+    message += "{\"umidity\":";
+    message += "\"" + String(h) + "\"},";
+
+    message += "{\"raindrop\":";
+    message += "\"" + raindropSensor() + "\"}";
     
+    message += "],";
+
+    message += " \"actuators\":[";
+
+    message += "]";
+
     message += " }";
   
   Serial.println("SERVER RESPONSE");
@@ -153,6 +188,10 @@ void setup() {
   dht.begin();
 
   server.on("/ping", handlePing);
+  server.on("/temperature", handleTemperature);
+  server.on("/umidity", handleHumidity);
+  server.on("/rain", handleRainSensor);
+  
   server.begin();
   Serial.println("SERVER BEGIN!!");
 }

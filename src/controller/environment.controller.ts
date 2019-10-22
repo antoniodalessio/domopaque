@@ -5,8 +5,6 @@ import DeviceController from './device.controller'
 
 import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
 
-var sensorLib = require('node-dht-sensor');
-
 import { config } from '../config'
 
 export default class EnvironmentController implements Environment{
@@ -33,7 +31,7 @@ export default class EnvironmentController implements Environment{
     
   }
 
-  async createSlaveDevices () {
+  async createDevices() {
     for (const ip of this.ips) {
       let url = `http://${ip}:${config.devicePort}/ping`
       let deviceName = `${this.name}_${ip}`
@@ -68,55 +66,6 @@ export default class EnvironmentController implements Environment{
     }
   }
 
-  async createMasterSensors() {
-
-    let ip = 'server.raspberry'
-    let deviceName = `${this.name}_${ip}`
-    let deviceData = {};
-    
-    try {
-      let res = await sensorLib.read(11, 4);
-      
-      deviceData = {
-        name: deviceName,
-        temperature: res.temperature.toFixed(1),
-        umidity: res.humidity.toFixed(1),
-        deviceName,
-        ip
-      }
-    } catch (e){
-
-      deviceData = {
-        name: deviceName,
-        deviceName,
-        ip,
-        error: { 
-          msg: `No sensors connected ${e}`,
-          code: 404,
-        }
-      }     
-    }
-
-    if (!this.devicesController[deviceName]){
-      let deviceController:DeviceController = new DeviceController(await this.getData(), deviceData);
-      this.devicesController[deviceName] = deviceController;
-      let device:Device = this.devicesController[deviceName].getData()
-      this.devices.push(device)
-    }else{
-      this.devicesController[deviceName].refresh(deviceData)
-      let pos = this.devices.map(function(e) { return e.name }).indexOf(deviceName);
-      this.devices[pos] = this.devicesController[deviceName].getData()
-    }
-
-  }
-
-	async createDevices() {
-    
-    if (this.type == 'slave') await this.createSlaveDevices()
-    // Master is raspberry and there is not devices but only associates sensor
-    if (this.type == 'master') await this.createMasterSensors()
-    
-	}
 
 	async getData() {
     return {
