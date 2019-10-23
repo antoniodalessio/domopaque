@@ -8,8 +8,7 @@ import { config } from './config'
 var app = express();
 let users = [];
 
-let homeController: HomeController = new HomeController()
-let GHCtrl = new GoogleHomeController();
+let homeController: HomeController = new HomeController();
 let notificationCtrl: NotificationController = new NotificationController()
 
 app.use(express.json());
@@ -29,6 +28,7 @@ function createRoutes() {
   
   app.post('/api/google-home', function (req, res) {
     let msg = req.body.msg;
+    let GHCtrl = new GoogleHomeController();
     GHCtrl.speak(msg)
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({msg}));
@@ -86,18 +86,23 @@ function createRoutes() {
   });
 
   app.get('/api/actuators', function (req, res) {
+    let actuators = homeController.listActuators();
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ }));
+    res.send(JSON.stringify(actuators));
   });
 
-  app.get('/api/actuators/:id', function (req, res) {
+  app.get('/api/actuators/:name', async function (req, res) {
+    let actuator = await homeController.actuatorByName(req.params.name);
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ }));
+    res.send(JSON.stringify(actuator));
   });
 
-  app.post('/api/actuators/:id/:value', function (req, res) {
+  app.post('/api/actuators', async function (req, res) {
+    let actuator = await homeController.actuatorByName(req.body.name);
+    actuator.setValue(parseInt(req.body.value))
+    await actuator.refresh()
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ }));
+    res.send(JSON.stringify(actuator.getData()));
   });
 
 }

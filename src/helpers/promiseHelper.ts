@@ -4,9 +4,9 @@
 // }
 
 
-export const fetchPromise = (url) => {
+export const fetchPromise = (url, params = {}) => {
     return new Promise(function(resolve, reject) {
-      fetch(url)
+      fetch(url, params)
         .then((res) => resolve(res.json()))
         .catch(() => {console.error(`Timeout del server ${url}`)})
     });

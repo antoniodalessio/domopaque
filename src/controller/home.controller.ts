@@ -6,9 +6,9 @@ class HomeController {
 
   private _environmentsController
   private _environments: Environment[] 
-  private _devices
-  private _sensors
-  private _actuators
+  private _devices = []
+  private _sensors = []
+  private _actuators = []
 
   constructor() {
     this.reset()
@@ -28,6 +28,31 @@ class HomeController {
   reset() {
     this.environmentsController = {}
     this.environments = [];
+  }
+
+  listActuators() {
+
+    this.actuators = [];
+
+    Object.keys(this.environmentsController).forEach((key) => {
+      let devicesController = (this.environmentsController[key]).devicesController;
+      Object.keys(devicesController).forEach((key2) => {
+        this.actuators = this.actuators.concat(devicesController[key2].actuatorControllers);
+      })
+    })
+
+    return this.actuators;
+  }
+
+  async actuatorByName(name: String) {
+    if (this.actuators.length == 0) {
+      this.listActuators()
+    }
+
+    let actuatorController = this.actuators.find((actuator) => { return actuator.name == name})
+    await actuatorController.refresh();
+
+    return actuatorController
   }
 
 
@@ -57,6 +82,10 @@ class HomeController {
 
   get actuators() {
     return this._actuators
+  }
+
+  set actuators(val) {
+    this._actuators = val;
   }
 
 }

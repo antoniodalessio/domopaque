@@ -38,7 +38,8 @@ class DeviceController implements Device{
             name: this.name,
             ip: this.ip,
             type: this.type,
-            sensors: this.sensors
+            sensors: this.sensors,
+            actuators: this.actuators
         }
 
         if (this.error) {
@@ -54,7 +55,7 @@ class DeviceController implements Device{
         if (this.deviceData.sensors && this.deviceData.sensors.length > 0) {
             for (let sensor of this.deviceData.sensors) {
                 let sensorController = new SensorController(this.getData(), sensor)
-                console.log("getDAta, sensor controller", sensorController.getData())
+                this.sensorControllers.push(sensorController)
                 this.sensors.push(sensorController.getData())
             }
         }
@@ -62,11 +63,23 @@ class DeviceController implements Device{
 
     setActuators() {
         this.actuators = []
+        if (this.deviceData.actuators && this.deviceData.actuators.length > 0) {
+            for (let actuator of this.deviceData.actuators) {
+                let actuatorController = new ActuatorController(this.getData(), actuator )
+                this.actuatorControllers.push(actuatorController)
+                this.actuators.push(actuatorController.getData())
+            }
+        }
+    }
+
+    getActuatorByName(name) {
+        return this.actuators.find((actuator) => {actuator.name == name});
     }
 
     refresh(deviceData) {
         this.deviceData = deviceData;
         this.setSensors()
+        this.setActuators()
     }
 
     set environment(environment) {
