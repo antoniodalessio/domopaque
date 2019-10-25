@@ -1,15 +1,15 @@
 var express = require('express');
-var bodyParser = require("body-parser");
 
-
+import HomeController from './controller/home.controller'
+import NotificationController from './controller/notification.controller'
 import GoogleHomeController from './controller/GoogleHome.controller'
-import EnvironmentController from './controller/environment.controller'
 import { config } from './config'
-import Environment from './model/environment'
 
 var app = express();
-let environments:Environment[] = [];
-let environmentsController = {}
+let users = [];
+
+let homeController: HomeController = new HomeController();
+let notificationCtrl: NotificationController = new NotificationController()
 
 app.use(express.json());
 
@@ -19,40 +19,43 @@ app.listen(3001, async function () {
 });
 
 async function initApp() {
-  await createEnvironments();
+  await homeController.create(config.environments)
   createRoutes();
-}
-
-async function createEnvironments() {
-  environmentsController = {}
-  for (const environment of config.environments) {
-    let environmentController = new EnvironmentController(environment)
-    environmentsController[environment.name] = environmentController
-    let data = await environmentController.getData()
-    environments.push(data)
-  }
-
 }
 
 
 function createRoutes() {
   
-  app.post('/google-home', function (req, res) {
+  app.post('/api/google-home', function (req, res) {
     let msg = req.body.msg;
-    let GH = new GoogleHomeController();
-    GH.speak(msg)
+    let GHCtrl = new GoogleHomeController();
+    GHCtrl.speak(msg)
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({msg}));
   });
-  
-  app.get('/environments', function(req, res) {
+
+  app.post('/api/store-user', function (req, res) {
+    let user = req.body.user;
+    notificationCtrl.users.push(user);
+    let tokens = notificationCtrl.users.map((user) => {
+      return user.fcmToken.token;
+    })
+    for (const token of tokens) {
+      notificationCtrl.sendTo(token)
+    }
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ environments }));
+    res.send(JSON.stringify({user}));
   });
   
-  app.get('/environments/:name', async function(req, res) {
-    if (environmentsController[req.params.name]) {
-      let data = await environmentsController[req.params.name].getData()
+  app.get('/api/environments', function(req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ environments: homeController.environments }));
+  });
+  
+  app.get('/api/environments/:name', async function(req, res) {
+    if (homeController.environmentsController[req.params.name]) {
+      await homeController.environmentsController[req.params.name].refresh()
+      let data = await homeController.environmentsController[req.params.name].getData()
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(data));
     }else{
@@ -61,9 +64,9 @@ function createRoutes() {
     }
   });
 
-  app.get('/refresh', async function(req, res) {
+  app.get('/api/refresh', async function(req, res) {
     try {
-      await createEnvironments()
+      await homeController.create(config.environments)
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({ msg: 'ok' }));
     }catch{
@@ -72,13 +75,34 @@ function createRoutes() {
     }
   });
   
-  app.get('/devices', function(req, res) {
+  app.get('/api/devices', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ environments }));
+    res.send(JSON.stringify({ }));
   });
   
-  app.get('/devices/:name', function(req, res) {
+  app.get('/api/devices/:name', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ environments }));
+    res.send(JSON.stringify({ }));
   });
+
+  app.get('/api/actuators', function (req, res) {
+    let actuators = homeController.listActuators();
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(actuators));
+  });
+
+  app.get('/api/actuators/:name', async function (req, res) {
+    let actuator = await homeController.actuatorByName(req.params.name);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(actuator));
+  });
+
+  app.post('/api/actuators', async function (req, res) {
+    let actuator = await homeController.actuatorByName(req.body.name);
+    actuator.setValue(parseInt(req.body.value))
+    await actuator.refresh()
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(actuator.getData()));
+  });
+
 }

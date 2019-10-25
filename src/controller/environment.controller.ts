@@ -1,151 +1,101 @@
 import Environment from '../model/environment'
 import Device from '../model/device';
 import Sensor from '../model/sensor';
+import DeviceController from './device.controller'
 
-var sensorLib = require('node-dht-sensor');
+import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
 
 import { config } from '../config'
 
-export default class EnvironmentController {
+export default class EnvironmentController implements Environment{
 	
-  data:Environment;
   sensors:Sensor[] = []
 
+  name: string;
+  type: string;
+  color: string;
+  ips: [];
+  lastTimestampPing: number
+  inside: boolean
+  private _devices:Device[] = [];
+  private _devicesController = {};
+
+
 	constructor(environment) {
-		this.data = {
-			name: environment.name,
-			color: environment.color,
-			type: environment.type,
-			ips: environment.ips
-    }
     
-    if (environment.type == 'master') {
-      environment.sensors.forEach(sensor => {
-        let sens = {
-          name: '',
-          pin: sensor.pin,
-          type: sensor.type,
-        }
-
-        if (!sensorLib.initialize(sensor.type, sensor.pin)) {
-          console.warn('Failed to initialize sensor');
-        }
-
-        this.sensors.push(sens)
-      });
-    }
-  }
-  
-
-  createSensor(deviceData, key, device) {
-    let sensor:Sensor = {
-      name: `${device.name}_${key}`,
-      type: key,
-      value: deviceData[key],
-      timestamp: Date.now()
-    }
-    return sensor;
+    this.name =  environment.name,
+		this.color = environment.color,
+    this.type =  environment.type,
+		this.ips =  environment.ips
+    this.inside = environment.inside
+    
   }
 
-  timerPromise(time) {
-    return new Promise(function(resolve, reject) {
-      setTimeout(resolve, time, null);
-    });
-  }
+  async createDevices() {
+    for (const ip of this.ips) {
+      let url = `http://${ip}:${config.devicePort}/ping`
+      let deviceName = `${this.name}_${ip}`
 
-  fetchPromise(url) {
-    return new Promise(function(resolve, reject) {
-      fetch(url)
-        .then((res) => resolve(res.json()))
-        .catch(() => {console.error(`Timeout del server ${url}`)})
-    });
-  }
+      let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url)])
+      let deviceData = await race;
 
-  fetchTimeout(url, time) {
-    return Promise.race([this.timerPromise(time), this.fetchPromise(url)])
-  }
-
-  async createSlaveDevices (ips) {
-    let devices:Device[] = []
-
-    for (const ip of ips) {
-      let url = `http://${ip}:3005/ping`
-      //@todo let implement a wrapper function to manage fetch With Timeout
-      let race = Promise.race([this.timerPromise(config.fetchTimeout), this.fetchPromise(url)])
-
-      let data = await race;
-
-      if (data) {      
-        let device:Device = {
-          name: `${this.data.name}_${ip}`,
+      if (!deviceData) {
+        deviceData = {
+          name: deviceName,
+          deviceName,
           ip: ip,
-          sensors: []
-        }
-        
-        if (data.hasOwnProperty("temperature")) {
-          let temeperature = this.createSensor(data, 'temperature', device)
-          device.sensors.push(temeperature)
-          let umidity = this.createSensor(data, 'umidity', device)
-          device.sensors.push(umidity)
-        }
-        devices.push(device)
-      }else{
-        let device:Device = {
-          name: ip,
           error: { 
             msg: `device doesn't responding: ${ip} over ${config.fetchTimeout / 1000} seconds`,
             code: 404,
           }
-        }
-        devices.push(device)
+        }        
       }
-    }
 
-		return devices
+      if (!this.devicesController[deviceName]){
+        let deviceController:DeviceController = new DeviceController(await this.getData(), deviceData);
+        this.devicesController[deviceName] = deviceController;
+        let device:Device = this.devicesController[deviceName].getData()
+        this.devices.push(device)
+      }else{
+        this.devicesController[deviceName].refresh(deviceData)
+        let pos = this.devices.map(function(e) { return e.name }).indexOf(deviceName);
+        this.devices[pos] = this.devicesController[deviceName].getData()
+      }
+
+
+    }
   }
 
-  async createMasterSensor() {
-    let devices:Device[] = []
-
-    devices[0] = {
-      name: 'raspberry'
-    }
-
-    let readout = sensorLib.read();
-    let temperature = readout.temperature;
-    let umidity = readout.humidity;
-    this.sensors[0] = {
-      name: 'temperature',
-      type: "temperature",
-      value: temperature,
-      timestamp: Date.now()
-    }
-
-    this.sensors[1] = {
-      name: 'umidity',
-      type: "umidity",
-      value: umidity,
-      timestamp: Date.now()
-    }
-
-    devices[0].sensors = this.sensors  
-
-    return devices;
-  }
-
-	async createDevices(ips, type) {
-    
-    if (type == 'slave') return await this.createSlaveDevices(ips)
-    // Master is raspberry and there is not devices but only associates sensor
-    if (type == 'master') return await this.createMasterSensor()
-    
-	}
 
 	async getData() {
-    let env:Environment = this.data;
-    let devices:Device[] = await this.createDevices(this.data.ips, env.type);
-		env.devices = devices
-		return env
-	}
+    return {
+      name: this.name,
+      type: this.type,
+      color: this.color,
+      ips: this.ips,
+      devices: this.devices,
+      inside: this.inside
+    }
+  }
+
+  async refresh() {
+    await this.createDevices()
+  }
+  
+  get devices() {
+    return this._devices;
+  }
+
+  set devices(device) {
+    this._devices = device
+  }
+
+  get devicesController() {
+    return this._devicesController;
+  }
+
+  set devicesController(devicesController) {
+    this._devicesController = devicesController
+  }
 
 }

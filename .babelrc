@@ -1,0 +1,18 @@
+{
+    "presets": [
+      
+    ],
+    "plugins": [
+      [
+        "module-resolver",
+        {
+          "root": ["./src"],
+          "alias": {
+            "@controller": "./src/controller",
+            "@controller/*": "./src/controller/*",
+          },
+        },
+      ],
+    ],
+  }
+  

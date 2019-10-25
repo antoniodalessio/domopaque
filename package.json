@@ -27,11 +27,13 @@
   "dependencies": {
     "@types/node": "^12.7.8",
     "express": "^4.17.1",
-    "node-dht-sensor": "^0.4.0",
+    "fcm-node": "^1.5.2",
+    "inversify": "^5.0.1",
     "node-googlehome": "0.0.7",
     "typescript": "^3.6.3"
   },
   "devDependencies": {
-    "axios": "^0.19.0"
+    "axios": "^0.19.0",
+    "reflect-metadata": "^0.1.13"
   }
 }

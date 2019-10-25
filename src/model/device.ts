@@ -3,7 +3,6 @@ import Actuator from './actuator'
 
 interface Device {
     name: string,
-    color?: string,
     ip?: string,
     sensors?: Sensor[],
     actuators?: Actuator[],

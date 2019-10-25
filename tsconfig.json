@@ -5,7 +5,15 @@
     "outDir": "dist",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "reflect-metadata"
+    ],
+  },
+  "paths": {
+    "@controller": ["./src/controller/*"],
   },
   "include": [
     "src/**/*.ts"
