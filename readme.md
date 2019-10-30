@@ -11,88 +11,107 @@ When the server starts, ping devices ip readed in the configuration files and de
 Example
 ```json
 {
-    "environments": [
-        {
-            "name": "soggiorno",
-            "color": "green",
-            "type": "master",
-            "ips": "",
-            "devices": [
-                {
-                    "name": "raspberry",
-                    "sensors": [
-                        {
-                            "name": "temperature",
-                            "type": "temperature",
-                            "value": 21,
-                            "timestamp": 1570715032950
-                        },
-                        {
-                            "name": "umidity",
-                            "type": "umidity",
-                            "value": 74,
-                            "timestamp": 1570715032950
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "veranda",
-            "color": "purple",
-            "type": "slave",
-            "ips": [
-                "192.168.1.10"
-            ],
-            "devices": [
-                {
-                    "name": "veranda_192.168.1.10",
-                    "ip": "192.168.1.10",
-                    "sensors": [
-                        {
-                            "name": "veranda_192.168.1.10_temperature",
-                            "type": "temperature",
-                            "value": "23.70",
-                            "timestamp": 1570719554557
-                        },
-                        {
-                            "name": "veranda_192.168.1.10_umidity",
-                            "type": "umidity",
-                            "value": "51.00",
-                            "timestamp": 1570719554558
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "corridoio_piano_secondo",
-            "color": "yellow",
-            "type": "slave",
-            "ips": [
-                "192.168.1.11"
-            ],
-            "devices": [
-                {
-                    "name": "corridoio_piano_secondo_192.168.1.11",
-                    "ip": "192.168.1.11",
-                    "sensors": [
-                        {
-                            "name": "corridoio_piano_secondo_192.168.1.11_temperature",
-                            "type": "temperature",
-                            "value": "19.90",
-                            "timestamp": 1570715050487
-                        },
-                        {
-                            "name": "corridoio_piano_secondo_192.168.1.11_umidity",
-                            "type": "umidity",
-                            "value": "76.00",
-                            "timestamp": 1570715050487
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+environments: [
+{
+name: "soggiorno",
+color: "green",
+ips: [
+"192.168.1.5"
+],
+devices: [
+{
+name: "soggiorno_192.168.1.5",
+ip: "192.168.1.5",
+type: "",
+sensors: [
+{
+name: "soggiorno_192.168.1.5_temperature",
+type: "temperature",
+value: "19.00",
+timestamp: 1572442148279
+},
+{
+name: "soggiorno_192.168.1.5_umidity",
+type: "umidity",
+value: "90.00",
+timestamp: 1572442148279
+}
+],
+actuators: [
+{
+name: "192.168.1.5_main_light",
+value: 0,
+type: "rele",
+timestamp: 1572442148279
+}
+]
+}
+],
+inside: true
+},
+{
+name: "veranda",
+color: "purple",
+ips: [
+"192.168.1.10"
+],
+devices: [
+{
+name: "veranda_192.168.1.10",
+ip: "192.168.1.10",
+type: "",
+sensors: [
+{
+name: "veranda_192.168.1.10_temperature",
+type: "temperature",
+value: "20.90",
+timestamp: 1572442165304
+},
+{
+name: "veranda_192.168.1.10_lightSensor",
+type: "lightSensor",
+value: "0",
+timestamp: 1572442165304
+},
+{
+name: "veranda_192.168.1.10_umidity",
+type: "umidity",
+value: "83.00",
+timestamp: 1572442165304
+},
+{
+name: "veranda_192.168.1.10_raindrop",
+type: "raindrop",
+value: "very_dry_not_raining",
+timestamp: 1572442165304
+}
+],
+actuators: [ ]
+}
+],
+inside: false
+},
+{
+name: "corridoio_piano_primo",
+color: "yellow",
+ips: [
+"192.168.1.11"
+],
+devices: [
+{
+name: "corridoio_piano_primo_192.168.1.11",
+ip: "192.168.1.11",
+type: "",
+sensors: [ ],
+actuators: [ ],
+error: {
+msg: "device doesn't responding: 192.168.1.11 over 4 seconds",
+code: 404
+}
+}
+],
+inside: true
+}
+]
 }
 ```
