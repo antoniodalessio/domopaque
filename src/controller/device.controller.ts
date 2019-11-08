@@ -49,9 +49,8 @@ class DeviceController implements Device{
     }
 
     setSensors() {
-
         this.sensors = []
-
+        this.sensorControllers = []
         if (this.deviceData.sensors && this.deviceData.sensors.length > 0) {
             for (let sensor of this.deviceData.sensors) {
                 let sensorController = new SensorController(this.getData(), sensor)
@@ -63,6 +62,7 @@ class DeviceController implements Device{
 
     setActuators() {
         this.actuators = []
+        this.actuatorControllers = []
         if (this.deviceData.actuators && this.deviceData.actuators.length > 0) {
             for (let actuator of this.deviceData.actuators) {
                 let actuatorController = new ActuatorController(this.getData(), actuator )

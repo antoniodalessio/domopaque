@@ -1,4 +1,5 @@
 #include <ESP8266WebServer.h>
+
 #include "DHT.h"
 #define DHTTYPE DHT11
 #define DHT11_PIN 2
@@ -64,24 +65,61 @@ void setupWifi() {
   Serial.println(ip);
 }
 
+String jsonKeyValue(String key, String value, boolean final) {
+  String str = "";
+  str += " \"" + key + "\":";
+  if (final) {
+    str += " \"" + value + "\"";
+  }else{
+    str += " \"" + value + "\",";
+  }
+  return str;
+}
+
+void handleTemperature() {
+  float Temperature = dht.readTemperature();
+  String message = "{";
+  message += " \"value\":";
+  message += "\"" + String(Temperature) + "\"";
+  message += " }";
+  server.send(200, "application/json", message);
+}
+
+void handleHumidity() {
+  float h = dht.readHumidity();
+  String message = "{";
+  message += " \"value\":";
+  message += "\"" + String(h) + "\"";
+  message += " }";
+  server.send(200, "application/json", message);
+}
+
 void handlePing() {
 
   float Temperature = dht.readTemperature();
   float h = dht.readHumidity();
 
   String message = "{ ";
-    message += " \"temperature\":";
-    message += "\"" + String(Temperature) + "\",";
 
-    message += " \"umidity\":";
-    message += "\"" + String(h) + "\",";
+    message += jsonKeyValue("deviceName", "corridoio_piano_primo", false);
+    message += jsonKeyValue("ip", ip, false);
 
-    message += " \"deviceName\":";
-    message += " \"corridoio_primo_piano\",";
+    message += " \"sensors\":[";
 
-    message += " \"ip\":";
-    message += "\"" + ip + "\"";
+    message += "{";
+    message += jsonKeyValue("temperature", String(Temperature) , true);
+    message += "},";
+
+    message += "{";
+    message += jsonKeyValue("umidity", String(h) , true);
+    message += "}";
     
+    message += "],";
+
+    message += " \"actuators\":[";
+
+    message += "]";
+
     message += " }";
   
   Serial.println("SERVER RESPONSE");
@@ -147,6 +185,9 @@ void setup() {
   dht.begin();
 
   server.on("/ping", handlePing);
+  server.on("/temperature", handleTemperature);
+  server.on("/umidity", handleHumidity);
+  
   server.begin();
   Serial.println("SERVER BEGIN!!");
 }

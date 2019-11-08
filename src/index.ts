@@ -4,12 +4,14 @@ import HomeController from './controller/home.controller'
 import NotificationController from './controller/notification.controller'
 import GoogleHomeController from './controller/GoogleHome.controller'
 import { config } from './config'
+import UsersController from './controller/users.controller';
 
 var app = express();
 let users = [];
 
 let homeController: HomeController = new HomeController();
 let notificationCtrl: NotificationController = new NotificationController()
+let usersController: UsersController = new UsersController()
 
 app.use(express.json());
 
@@ -34,15 +36,18 @@ function createRoutes() {
     res.send(JSON.stringify({msg}));
   });
 
-  app.post('/api/store-user', function (req, res) {
-    let user = req.body.user;
+  app.post('/api/store-user', async function (req, res) {
+
+    await usersController.addUser(req.body.user)
+
+    /*let user = req.body.user;
     notificationCtrl.users.push(user);
     let tokens = notificationCtrl.users.map((user) => {
       return user.fcmToken.token;
     })
     for (const token of tokens) {
       notificationCtrl.sendTo(token)
-    }
+    }*/
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({user}));
   });

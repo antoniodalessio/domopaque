@@ -3,6 +3,7 @@
 #include "DHT.h"
 #define DHTTYPE DHT11
 #define DHT11_PIN 2
+#define D1 5
 
 #ifndef STASSID
 #define STASSID "Vodafone-50278807"
@@ -93,6 +94,16 @@ void handleRainSensor() {
   server.send(200, "application/json", message);
 }
 
+
+void handleLightSensor() {
+  String message = "{";
+  message += " \"value\":";
+  message += "\"" + String(lightSensor()) + "\"";
+  message += " }";
+  server.send(200, "application/json", message);
+}
+
+
 void handlePing() {
 
   float Temperature = dht.readTemperature();
@@ -110,6 +121,9 @@ void handlePing() {
 
     message += "{\"temperature\":";
     message += "\"" + String(Temperature) + "\"},";
+
+    message += "{\"lightSensor\":";
+    message += "\"" + String(lightSensor()) + "\"},";
 
     message += "{\"umidity\":";
     message += "\"" + String(h) + "\"},";
@@ -178,8 +192,17 @@ String raindropSensor() {
 
 }
 
+int lightSensor() {
+  int light = digitalRead(D1);
+  return light;
+}
+
 void setup() {
   setupRaindropSensor();
+
+  pinMode(D1,INPUT);
+
+  
   
   //pinMode(magneticSensorPin,INPUT_PULLUP);  
   
@@ -191,6 +214,7 @@ void setup() {
   server.on("/temperature", handleTemperature);
   server.on("/umidity", handleHumidity);
   server.on("/rain", handleRainSensor);
+  server.on("lightSensor", handleLightSensor);
   
   server.begin();
   Serial.println("SERVER BEGIN!!");
@@ -199,5 +223,4 @@ void setup() {
 void loop() {
   server.handleClient();
   //magneticSensor();
-  //raindropSensor();
 }
