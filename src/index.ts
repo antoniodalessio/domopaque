@@ -91,7 +91,9 @@ function createRoutes() {
   });
 
   app.get('/api/actuators', function (req, res) {
-    let actuators = homeController.listActuators();
+    let actuators = homeController.listActuators().map( (actuator) => {
+      actuator.getData()
+    });
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(actuators));
   });
