@@ -49,7 +49,7 @@ function createRoutes() {
       notificationCtrl.sendTo(token)
     }*/
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({user}));
+    res.send(JSON.stringify({}));
   });
   
   app.get('/api/environments', function(req, res) {
