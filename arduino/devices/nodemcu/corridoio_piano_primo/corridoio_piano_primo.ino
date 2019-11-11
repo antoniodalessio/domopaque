@@ -1,3 +1,10 @@
+/*
+  DHT11
+  BLU: GND
+  VIOLA: 3,3
+  VERDE: D4
+*/
+
 #include <ESP8266WebServer.h>
 
 #include "DHT.h"
