@@ -27,7 +27,10 @@ const io = require('socket.io')(server);
 app.setMaxListeners(0);
 io.setMaxListeners(0);
 
-io.on('connection', (socket) => {
+let socket = null;
+
+io.on('connection', (s) => {
+  socket = s;
   socket.setMaxListeners(0);
   socket.emit('inizio connessione');
   socket.on('risposta client', function (data) {
@@ -123,6 +126,7 @@ function createRoutes() {
     let actuator = await homeController.actuatorByName(req.body.name);
     actuator.setValue(parseInt(req.body.value))
     await actuator.refresh()
+    socket.emit('actuator change', {name: req.body.name, value: req.body.value});
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(actuator.getData()));
   });
