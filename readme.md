@@ -1,4 +1,4 @@
-# An experimental building automation framework based on Raspberry PI and nodemcu in nodejs server.
+# An experimental building automation framework based on Raspberry PI and nodemcu(ESP8266) in nodejs server.
 
 A device that makes decisions is usually called a controller. Its biological equivalent is a brain. The devices that collect information are called sensors, which are equivalent to the senses. The devices that act to control the equipment are called actuators, which are equivalent to muscles. The information from the sensors to the controller and from the controller to the actuators travel over communication channels, which are usually wires but can be fiber optics, radio signals or complex networks. Such communication channels are equivalent to the nerves.
 
