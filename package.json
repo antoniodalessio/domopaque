@@ -30,6 +30,7 @@
     "fcm-node": "^1.5.2",
     "inversify": "^5.0.1",
     "node-googlehome": "0.0.7",
+    "socket.io": "^2.3.0",
     "typescript": "^3.6.3"
   },
   "devDependencies": {

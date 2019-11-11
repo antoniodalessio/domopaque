@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require('express')
 
 import HomeController from './controller/home.controller'
 import NotificationController from './controller/notification.controller'
@@ -7,6 +7,8 @@ import { config } from './config'
 import UsersController from './controller/users.controller';
 
 var app = express();
+//const server = require('http').createServer(app);
+
 let users = [];
 
 let homeController: HomeController = new HomeController();
@@ -15,9 +17,22 @@ let usersController: UsersController = new UsersController()
 
 app.use(express.json());
 
-app.listen(3001, async function () {
+let server = app.listen(3001, async function () {
   console.log('Server Running on port 3001!');
   await initApp()
+});
+
+const io = require('socket.io')(server);
+
+app.setMaxListeners(0);
+io.setMaxListeners(0);
+
+io.on('connection', (socket) => {
+  socket.setMaxListeners(0);
+  socket.emit('inizio connessione');
+  socket.on('risposta client', function (data) {
+    console.log(data);
+    });
 });
 
 async function initApp() {
