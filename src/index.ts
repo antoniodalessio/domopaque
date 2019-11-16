@@ -146,9 +146,9 @@ function createRoutes() {
   });
 
   // Set a value from External Serivices. Value doesn't change the state
-  app.post('/api/virtualactuators/setStatus', async function (req, res) {
+  app.post('/api/virtualactuators/setStatus', function (req, res) {
     let actuator = homeController.virtualActuatorByName(req.body.name);
-    await actuator.value(parseInt(req.body.value))
+    actuator.value = parseInt(req.body.value)
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(actuator.getData()));
   })
