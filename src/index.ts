@@ -1,3 +1,4 @@
+require('dotenv').config()
 var express = require('express')
 
 import HomeController from './controller/home.controller'
@@ -7,7 +8,6 @@ import { config } from './config'
 import UsersController from './controller/users.controller';
 
 var app = express();
-//const server = require('http').createServer(app);
 
 let users = [];
 
@@ -130,5 +130,27 @@ function createRoutes() {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(actuator.getData()));
   });
+
+  app.get('/api/virtualactuators/:name', async function (req, res) {
+    let actuator = await homeController.virtualActuatorByName(req.params.name);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(actuator));
+  });
+
+  // Set a status from app or any client side applications
+  app.post('/api/virtualactuators', async function (req, res) {
+    let actuator = homeController.virtualActuatorByName(req.body.name);
+    await actuator.setValue(parseInt(req.body.value))
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(actuator.getData()));
+  });
+
+  // Set a value from External Serivices. Value doesn't change the state
+  app.post('/api/virtualactuators/setStatus', async function (req, res) {
+    let actuator = homeController.virtualActuatorByName(req.body.name);
+    await actuator.value(parseInt(req.body.value))
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(actuator.getData()));
+  })
 
 }

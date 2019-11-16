@@ -9,6 +9,7 @@ class HomeController {
   private _devices = []
   private _sensors = []
   private _actuators = []
+  private _virtualActuators = []
 
   constructor() {
     this.reset()
@@ -20,6 +21,7 @@ class HomeController {
       let environmentController = new EnvironmentController(environment)
       this.environmentsController[environment.name] = environmentController
       await environmentController.createDevices()
+      await environmentController.createVirtualActuators()
       let data = await environmentController.getData()
       this.environments.push(data)
     }
@@ -55,6 +57,26 @@ class HomeController {
     return actuatorController
   }
 
+  listVirtualActuators() {
+    this.virtualActuators = [];
+    
+    Object.keys(this.environmentsController).forEach((key) => {
+      this.virtualActuators = this.virtualActuators.concat(this.environmentsController[key].virtualActuatorsController)
+    })
+  }
+
+  virtualActuatorByName(name: String) {
+    if (this.virtualActuators.length == 0) {
+      this.listVirtualActuators()
+    }
+
+    let actuatorController = this.virtualActuators.find((actuator) => { return actuator.name == name})
+    //await actuatorController.refresh();
+
+    return actuatorController
+
+  }
+
 
   get environmentsController() {
     return this._environmentsController
@@ -86,6 +108,14 @@ class HomeController {
 
   set actuators(val) {
     this._actuators = val;
+  }
+
+  get virtualActuators() {
+    return this._virtualActuators
+  }
+
+  set virtualActuators(val) {
+    this._virtualActuators = val;
   }
 
 }

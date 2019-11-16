@@ -1,19 +1,18 @@
 var FCM = require('fcm-node');
-var serverKey = 'AAAAzrR9y9g:APA91bGRH3oO0jYrby24Zgou-If_gmynlD4uOHuaKJ4terNeIr9pP90J7Ur4lXCs-F0Mbw2SZR5m3FCKINXvnwNq4bcJ6P5B_UkJqopfO5qB1BqAylGF86yyi8kasl_I0M865pkDCzvQ';
-var fcm = new FCM(serverKey);
+var fcm = new FCM(process.env.FCM_SERVER_KEY);
 
 class NotificationController {
 
     _users
     
-    async sendTo(token) {
+    async sendTo(token, title, body) {
         let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
             to: token, 
             collapse_key: 'your_collapse_key',
             
             notification: {
-                title: 'Title of your push notification', 
-                body: 'Body of your push notification' 
+                title: title, 
+                body: body 
             },
             
             data: {  //you can send only notification or only data(or include both)

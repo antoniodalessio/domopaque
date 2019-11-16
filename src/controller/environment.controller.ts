@@ -6,19 +6,22 @@ import DeviceController from './device.controller'
 import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
 
 import { config } from '../config'
+import VirtualActuatorController from './virtualactuator.controller';
 
 export default class EnvironmentController implements Environment{
 	
   sensors:Sensor[] = []
 
-  name: string;
-  type: string;
-  color: string;
-  ips: [];
+  name: string
+  type: string
+  color: string
+  ips: []
   lastTimestampPing: number
   inside: boolean
+  virtualActuators
   private _devices:Device[] = [];
   private _devicesController = {};
+  private _virtualActuatorsController = []
 
 
 	constructor(environment) {
@@ -27,7 +30,8 @@ export default class EnvironmentController implements Environment{
 		this.color = environment.color,
     this.type =  environment.type,
 		this.ips =  environment.ips
-    this.inside = environment.inside
+    this.inside = environment.inside,
+    this.virtualActuators = environment.external_services && environment.external_services.actuators ?  environment.external_services.actuators : []
     
   }
 
@@ -66,6 +70,14 @@ export default class EnvironmentController implements Environment{
     }
   }
 
+  async createVirtualActuators() {
+    this.virtualActuatorsController = []
+    for (const actuator of this.virtualActuators) {
+      let actuatorController = new VirtualActuatorController(actuator)
+      this.virtualActuatorsController.push(actuatorController)
+    }
+  }
+
 
 	async getData() {
     return {
@@ -74,7 +86,8 @@ export default class EnvironmentController implements Environment{
       color: this.color,
       ips: this.ips,
       devices: this.devices,
-      inside: this.inside
+      inside: this.inside,
+      virtualActuators: this.virtualActuatorsController
     }
   }
 
@@ -97,5 +110,15 @@ export default class EnvironmentController implements Environment{
   set devicesController(devicesController) {
     this._devicesController = devicesController
   }
+
+  get virtualActuatorsController() {
+    return this._virtualActuatorsController;
+  }
+
+  set virtualActuatorsController(virtualActuatorsController) {
+    this._virtualActuatorsController = virtualActuatorsController
+  }
+
+  
 
 }

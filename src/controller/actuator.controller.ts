@@ -1,7 +1,7 @@
 import { config } from '../config'
 import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
 
-class Actuator {
+class ActuatorController {
     
   private _value: any
   private _name
@@ -80,4 +80,4 @@ class Actuator {
 
 }
 
-export default Actuator;
+export default ActuatorController;
