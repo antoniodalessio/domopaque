@@ -26,13 +26,10 @@
   },
   "homepage": "https://github.com/antoniodalessio/domopaque#readme",
   "dependencies": {
-    "and": "0.0.3",
-    "at": "^0.1.2",
     "cron": "^1.7.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "fcm-node": "^1.5.2",
-    "homebridge": "file:../../../../Users/antoniodalessio/.nvm/versions/node/v10.7.0/lib/node_modules/homebridge",
     "inversify": "^5.0.1",
     "mdns": "^2.5.1",
     "node-cron": "^2.0.3",
