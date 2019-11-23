@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for src/routes/googleHomeRoutes.ts</title>
+    <title>Code coverage report for src/routes/environmentRoutes.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -16,13 +16,13 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> googleHomeRoutes.ts
+      <a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> environmentRoutes.ts
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">54.55% </span>
+        <span class="strong">93.75% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>6/11</span>
+        <span class='fraction'>15/16</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,16 +35,16 @@
         <span class='fraction'>2/3</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">54.55% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>6/11</span>
+        <span class='fraction'>15/15</span>
       </div>
     </div>
     <p class="quiet">
       Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
     </p>
   </div>
-  <div class='status-line medium'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -65,22 +65,20 @@
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a>
-<a name='L21'></a><a href='#L21'>21</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -88,23 +86,22 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const routes = require('express').Router();
 &nbsp;
-import GoogleHomeController from '../controller/GoogleHome.controller'
-&nbsp;
-&nbsp;
-function initGoogleHomeRoutes() {
-&nbsp;
-  routes.post('/speak', <span class="fstat-no" title="function not covered" >function (r</span>eq, res) {
-    let msg = <span class="cstat-no" title="statement not covered" >req.body.msg;</span>
-    let GHCtrl = <span class="cstat-no" title="statement not covered" >new GoogleHomeController();</span>
-<span class="cstat-no" title="statement not covered" >    GHCtrl.speak(msg)</span>
-<span class="cstat-no" title="statement not covered" >    res.setHeader('Content-Type', 'application/json');</span>
-<span class="cstat-no" title="statement not covered" >    res.send(JSON.stringify({msg}));</span>
-  });
-&nbsp;
+function initEnvironmentRoutes(homeController, socket) {
+  routes.get('/refresh', homeController.refresh)
+  routes.get('/environments', homeController.getJSONEnvironments)
+  routes.get('/environments/:name', homeController.getJSONEnvironmentByName)
+  routes.get('/devices', homeController.getJSONDevices)
+  routes.get('/devices/:name', homeController.getJSONDeviceByName)
+  routes.get('/actuators', homeController.getJSONActuators)
+  routes.get('/actuators/:name', homeController.getJSONActuatorByName)
+  routes.post('/actuators', <span class="fstat-no" title="function not covered" >(r</span>eq, res) =&gt; { <span class="cstat-no" title="statement not covered" >homeController.setJSONactuatorValue(req, res, socket) }</span>)
+  routes.get('/virtualactuators/:name', homeController.getJSONVirtualActuatorByName);
+  routes.post('/virtualactuators', homeController.setJSONVirtualActuatorValue);
+  routes.post('/virtualactuators/setStatus', homeController.setJSONVirtualActuatorState)
 }
 &nbsp;
-export default () =&gt; {
-  initGoogleHomeRoutes();
+export default (homeCTRL, socket) =&gt; {
+  initEnvironmentRoutes(homeCTRL, socket);
   return routes
 };</pre></td></tr>
 </table></pre>
@@ -112,7 +109,7 @@ export default () =&gt; {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sat Nov 23 2019 10:19:52 GMT+0100 (GMT+01:00)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sat Nov 23 2019 10:54:20 GMT+0100 (GMT+01:00)
 </div>
 </div>
 <script src="../../prettify.js"></script>

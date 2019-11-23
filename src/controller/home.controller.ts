@@ -12,7 +12,7 @@ class HomeController {
   // Singleton Pattern instance
   private static instance: HomeController;
 
-  private configEnvironments
+  private _configEnvironments
   private _environmentsController
   private _environments: Environment[] 
   private _devices = []
@@ -164,7 +164,42 @@ class HomeController {
     res.status(200).json(actuator);
   }
 
+  async setJSONactuatorValue (req, res, socket) {
+    let actuator = await this.actuatorByName(req.body.name);
+    actuator.setValue(parseInt(req.body.value))
+    await actuator.refresh()
+    socket.emit('actuator change', {name: req.body.name, value: req.body.value});
+    res.status(200).json(actuator.getData());
+  }
+
+  async getJSONVirtualActuatorByName (req, res) {
+    let actuator = await this.virtualActuatorByName(req.params.name);
+    res.status(200).json(actuator.getData());
+  }
+
+  // Set a status from app or any client side applications
+  async setJSONVirtualActuatorValue (req, res) {
+    let actuator = this.virtualActuatorByName(req.body.name);
+    await actuator.setValue(parseInt(req.body.value))
+    res.status(200).json(actuator.getData());
+  }
+
+  // Set a value from External Services. Value doesn't change the state
+  setJSONVirtualActuatorState(req, res) {
+    let actuator = this.virtualActuatorByName(req.body.name);
+    actuator.value = parseInt(req.body.value)
+    res.status(200).json(actuator.getData());
+  }
+
   /* GETTER AND SETTER */
+  get configEnvironments() {
+    return this._configEnvironments
+  }
+
+  set configEnvironments(val) {
+    this._configEnvironments = val
+  }
+
   get environmentsController() {
     return this._environmentsController
   }

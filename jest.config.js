@@ -19,7 +19,5 @@ module.exports = {
     },
     testMatch: [
         "**/domopaque/__tests__/**/*.test.(ts|js)"
-    ],
-    "collectCoverage": true,
-     "coverageReporters": ["json", "html"]
+    ]
   };
