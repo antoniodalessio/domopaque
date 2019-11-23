@@ -1,44 +1,37 @@
-import Sensor from './../model/sensor'
-import Device from '../model/device';
+import Sensor from '../interface/sensor'
+import Device from '../interface/device';
+import BaseController from './base.controller';
 
-class SensorController implements Sensor{
+class SensorController extends BaseController{
     
-    name: string = '';
-    type: string = '';
-    private _value:any = '';
-    private _device:Device;
+  private _device:Device;
 
-    constructor(device, sensor) {
-        this.device = device;
-        this.type = Object.keys(sensor)[0];
-        this.name = `${device.name}_${this.type}`
-        this.value = sensor[this.type]
-    }
+  constructor(device, sensor) {
+    super()
+    this.device = device;
+    this.type = Object.keys(sensor)[0];
+    this.name = `${device.name}_${this.type}`
+    this.value = sensor[this.type]
+  }
 
-    getData() {
-        return {
-            name: this.name,
-            type: this.type,
-            value: this.value,
-            timestamp: Date.now()
-        }
-    }
+  getData() {
+    let data: Sensor = {
+          name: this.name,
+          type: this.type,
+          value: this.value,
+          timestamp: Date.now()
+      }
+    
+    return data
+  }
 
-    public get value() {
-        return this._value;
-    }
+  set device(device) {
+      this._device = device;
+  }
 
-    public set value(val) {
-        this._value = val;
-    }
-
-    set device(device) {
-        this._device = device;
-    }
-
-    get device() {
-        return this._device
-    }
+  get device() {
+      return this._device
+  }
 }
 
 export default SensorController;

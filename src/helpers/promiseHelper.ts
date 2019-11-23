@@ -1,14 +1,8 @@
-// @Service()
-// class PromiseHelper {
-//   constructor() {}
-// }
-
-
-export const fetchPromise = (url, params = {}) => {
+export const fetchPromise = (url, params = {}, failMsg = 'no failed message') => {
     return new Promise(function(resolve, reject) {
       fetch(url, params)
         .then((res) => resolve(res.json()))
-        .catch(() => {console.error(`Timeout del server ${url}`)})
+        .catch(() => {console.error(failMsg)})
     });
   }
 

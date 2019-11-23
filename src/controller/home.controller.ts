@@ -1,9 +1,18 @@
-import Environment from '../model/environment'
+import Environment from '../interface/environment'
 
 import EnvironmentController from "./environment.controller"
 
+/* 
+  Builder design pattern
+  Create environments, devices, sensors and actuators
+*/
+
 class HomeController {
 
+  // Singleton Pattern instance
+  private static instance: HomeController;
+
+  private configEnvironments
   private _environmentsController
   private _environments: Environment[] 
   private _devices = []
@@ -15,7 +24,16 @@ class HomeController {
     this.reset()
   }
 
+  public static getInstance(): HomeController {
+    if (!HomeController.instance) {
+      HomeController.instance = new HomeController();
+    }
+
+    return HomeController.instance;
+}
+
   async create(environments) {
+    this.configEnvironments = environments
     this.reset()
     for (const environment of environments) {
       let environmentController = new EnvironmentController(environment)
@@ -24,6 +42,10 @@ class HomeController {
       await environmentController.createVirtualActuators()
       let data = await environmentController.getData()
       this.environments.push(data)
+
+      await this.listSensors()
+      await this.listActuators()
+
     }
   }
 
@@ -46,11 +68,23 @@ class HomeController {
     return this.actuators;
   }
 
-  async actuatorByName(name: String) {
-    if (this.actuators.length == 0) {
-      this.listActuators()
-    }
+  async listSensors() {
+    this.sensors = [];
 
+    Object.keys(this.environmentsController).forEach((key) => {
+      let devicesController = (this.environmentsController[key]).devicesController;
+      Object.keys(devicesController).forEach((key2) => {
+        this.sensors = this.sensors.concat(devicesController[key2].sensorControllers);
+      })
+    })
+
+    return this.sensors;
+  }
+
+  async actuatorByName(name: String) {
+    
+    this.actuators.length == 0 && this.listActuators()
+  
     let actuatorController = this.actuators.find((actuator) => { return actuator.name == name})
     await actuatorController.refresh();
 
@@ -66,18 +100,71 @@ class HomeController {
   }
 
   virtualActuatorByName(name: String) {
-    if (this.virtualActuators.length == 0) {
-      this.listVirtualActuators()
-    }
-
+    this.virtualActuators.length == 0 && this.listVirtualActuators()
     let actuatorController = this.virtualActuators.find((actuator) => { return actuator.name == name})
-    //await actuatorController.refresh();
-
     return actuatorController
-
   }
 
+  getDevices() {
+    return Object.keys(this.environmentsController).map((key) => {
+      return (this.environmentsController[key]).devicesController;
+      
+      /*Object.keys(devicesController).forEach((key2) => {
 
+      })
+      //return (this.environmentsController[key]).devicesController;*/
+    })
+  }
+
+  /* JSON RESPONSE  */
+  getJSONEnvironments(req, res) {
+    let environments = this.environments
+    res.status(200).json({  });
+  }
+
+  async getJSONEnvironmentByName(req, res) {
+    let name = req.params.name
+    let environmentController = this.environmentsController[name]
+    if (environmentController) {
+      await environmentController.refresh()
+      let data = await environmentController.getData()
+      res.status(200).json(data);
+    }else{
+      res.status(200).json({error: 'no environment found'});
+    }
+  }
+
+  async getJSONDevices(req, res) {
+    res.status(200).json(this.getDevices());
+  }
+
+  async refresh(req, res) {
+    try {
+      await this.create(this.configEnvironments)
+      res.status(200).json({ msg: 'ok' });
+    }catch{
+      res.status(200).json({ msg: 'ok' });
+    }
+  }
+
+  //@todo
+  async getJSONDeviceByName(req, res) {
+    res.status(200).json({});
+  }
+
+  async getJSONActuators(req, res) {
+    let actuators = this.listActuators().map( (actuator) => {
+      return actuator.getData()
+    });
+    res.status(200).json(actuators);
+  }
+
+  async getJSONActuatorByName(req, res) {
+    let actuator = await this.actuatorByName(req.params.name);
+    res.status(200).json(actuator);
+  }
+
+  /* GETTER AND SETTER */
   get environmentsController() {
     return this._environmentsController
   }
@@ -100,6 +187,10 @@ class HomeController {
 
   get sensors() {
     return this._sensors
+  }
+
+  set sensors(value) {
+    this._sensors = value
   }
 
   get actuators() {

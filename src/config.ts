@@ -1,6 +1,8 @@
 export const config = {
 	fetchTimeout: 4000,
 	devicePort: '3005',
+	serverPort: 3001,
+	modelPath: '/model/*.js',
 	environments: [
 		{
 			name: 'soggiorno',

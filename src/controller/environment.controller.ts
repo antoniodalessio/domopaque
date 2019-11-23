@@ -1,6 +1,6 @@
-import Environment from '../model/environment'
-import Device from '../model/device';
-import Sensor from '../model/sensor';
+import Environment from '../interface/environment'
+import Device from '../interface/device';
+import Sensor from '../interface/sensor';
 import DeviceController from './device.controller'
 
 import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
@@ -25,14 +25,12 @@ export default class EnvironmentController implements Environment{
 
 
 	constructor(environment) {
-    
     this.name =  environment.name,
 		this.color = environment.color,
     this.type =  environment.type,
 		this.ips =  environment.ips
     this.inside = environment.inside,
     this.virtualActuators = environment.external_services && environment.external_services.actuators ?  environment.external_services.actuators : []
-    
   }
 
   async createDevices() {
@@ -40,7 +38,7 @@ export default class EnvironmentController implements Environment{
       let url = `http://${ip}:${config.devicePort}/ping`
       let deviceName = `${this.name}_${ip}`
 
-      let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url)])
+      let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url, {}, `Timeout del server ${url}`)])
       let deviceData = await race;
 
       if (!deviceData) {
@@ -80,7 +78,8 @@ export default class EnvironmentController implements Environment{
 
 
 	async getData() {
-    return {
+
+    let data: Environment = {
       name: this.name,
       type: this.type,
       color: this.color,
@@ -89,6 +88,8 @@ export default class EnvironmentController implements Environment{
       inside: this.inside,
       virtualActuators: this.virtualActuatorsController
     }
+
+    return data
   }
 
   async refresh() {

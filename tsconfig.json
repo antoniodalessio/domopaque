@@ -7,18 +7,25 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "types": [
       "node",
-      "reflect-metadata"
+      "reflect-metadata",
+      "jasmine"
     ],
   },
   "paths": {
     "@controller": ["./src/controller/*"],
+    "*": [
+      "node_modules/",
+    ],
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "__tests__/*.*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.spec.ts"
   ]
 }

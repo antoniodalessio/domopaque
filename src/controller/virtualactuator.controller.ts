@@ -1,16 +1,14 @@
-import ActuatorController from './actuator.controller'
-import Actuator from '../model/actuator'
+/*
+  Virtual Actuator implements external apis in order to use external services such as IFTTT, smart life, google assistant etc
+*/
 
-class VirtualActuatorController {
-  
-  data
-  name
-  mainName
-  value
-  type
-  timestamp
+import Actuator from '../interface/actuator'
+import BaseController from './base.controller'
+
+class VirtualActuatorController extends BaseController{
 
   constructor(data) {
+    super()
     this.type = data.type
     this.data = data
     this.name = data.name
@@ -39,9 +37,13 @@ class VirtualActuatorController {
   }
 
   getData() {
-    let obj:Actuator = this;
-    this.timestamp = Date.now()
-    return obj;
+    let data = {
+      name: this.name,
+      timestamp: Date.now(),
+      value: this.value
+    };
+    
+    return data;
   }
 
   async setValue(val) {
@@ -51,6 +53,7 @@ class VirtualActuatorController {
         break;
     }
   }
+
 }
 
 export default VirtualActuatorController;
