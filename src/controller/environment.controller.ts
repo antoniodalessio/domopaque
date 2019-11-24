@@ -86,7 +86,7 @@ export default class EnvironmentController implements Environment{
       ips: this.ips,
       devices: this.devices,
       inside: this.inside,
-      virtualActuators: this.virtualActuatorsController
+      virtualActuators: this.virtualActuatorsController.map((controller) =>  {return controller.getData()})
     }
 
     return data

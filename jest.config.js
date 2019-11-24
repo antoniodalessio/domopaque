@@ -18,6 +18,6 @@ module.exports = {
         "^.+\\.(ts|tsx)$": "ts-jest"
     },
     testMatch: [
-        "**/domopaque/__tests__/**/*.test.(ts|js)"
+        "**/domopaque/src/__tests__/**/*.test.(ts|js)"
     ]
   };

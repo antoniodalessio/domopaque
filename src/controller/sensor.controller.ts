@@ -1,8 +1,8 @@
-import Sensor from '../interface/sensor'
-import Device from '../interface/device';
-import BaseController from './base.controller';
+import Sensor from '@interface/sensor'
+import Device from '@interface/device';
+import AbstractController from './abstract.controller';
 
-class SensorController extends BaseController{
+class SensorController extends AbstractController{
     
   private _device:Device;
 

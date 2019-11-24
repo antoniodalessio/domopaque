@@ -1,20 +1,22 @@
+import HomeController from "@controller/home.controller";
+
 const routes = require('express').Router();
 
-function initEnvironmentRoutes(homeController, socket) {
+function initEnvironmentRoutes(homeController: HomeController) {
   routes.get('/refresh', homeController.refresh)
-  routes.get('/environments', homeController.getJSONEnvironments)
-  routes.get('/environments/:name', homeController.getJSONEnvironmentByName)
-  routes.get('/devices', homeController.getJSONDevices)
-  routes.get('/devices/:name', homeController.getJSONDeviceByName)
-  routes.get('/actuators', homeController.getJSONActuators)
-  routes.get('/actuators/:name', homeController.getJSONActuatorByName)
-  routes.post('/actuators', (req, res) => { homeController.setJSONactuatorValue(req, res, socket) })
-  routes.get('/virtualactuators/:name', homeController.getJSONVirtualActuatorByName);
-  routes.post('/virtualactuators', homeController.setJSONVirtualActuatorValue);
-  routes.post('/virtualactuators/setStatus', homeController.setJSONVirtualActuatorState)
+  routes.get('/environments', (req, res) => { homeController.getJSONEnvironments(req, res) })
+  routes.get('/environments/:name', (req, res) => { homeController.getJSONEnvironmentByName(req, res)})
+  routes.get('/devices', (req, res) => { homeController.getJSONDevices(req, res) })
+  routes.get('/devices/:name', (req, res) => {  homeController.getJSONDeviceByName(req, res) })
+  routes.get('/actuators', (req, res) => { homeController.getJSONActuators(req, res) })
+  routes.get('/actuators/:name', (req, res) => { homeController.getJSONActuatorByName(req, res) })
+  routes.post('/actuators', (req, res) => { homeController.setJSONactuatorValue(req, res) })
+  routes.get('/virtualactuators/:name', (req, res) => {  homeController.getJSONVirtualActuatorByName(req, res) })
+  routes.post('/virtualactuators', (req, res) => { homeController.setJSONVirtualActuatorState(req, res) })
+  routes.post('/virtualactuators/setValue', (req, res) => { homeController.setJSONVirtualActuatorValue(req, res) })
 }
 
-export default (homeCTRL, socket) => {
-  initEnvironmentRoutes(homeCTRL, socket);
+export default (homeCTRL) => {
+  initEnvironmentRoutes(homeCTRL);
   return routes
 };

@@ -1,9 +1,9 @@
 import { config } from '../config'
-import { fetchPromise } from './../helpers/promiseHelper'
-import Actuator from '../interface/actuator'
-import BaseController from './base.controller'
+import { fetchPromise } from '@helpers/promiseHelper'
+import Actuator from '@interface/actuator'
+import AbstractController from './abstract.controller'
 
-class ActuatorController extends BaseController{
+class ActuatorController extends AbstractController{
     
   constructor(data, actuator) {
     super()

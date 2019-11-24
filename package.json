@@ -32,6 +32,7 @@
     "fcm-node": "^1.5.2",
     "inversify": "^5.0.1",
     "mdns": "^2.5.1",
+    "module-alias": "^2.2.2",
     "node-cron": "^2.0.3",
     "node-googlehome": "0.0.7",
     "npm": "^6.13.1",
@@ -52,5 +53,12 @@
     "reflect-metadata": "^0.1.13",
     "supertest": "^4.0.2",
     "ts-jest": "^24.2.0"
+  },
+  "_moduleAliases": {
+    "@controller": "dist/controller",
+    "@routes": "dist/routes",
+    "@interface": "dist/interface",
+    "@model": "dist/model",
+    "@helpers": "dist/helpers"
   }
 }

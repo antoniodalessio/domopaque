@@ -2,10 +2,9 @@
   Virtual Actuator implements external apis in order to use external services such as IFTTT, smart life, google assistant etc
 */
 
-import Actuator from '../interface/actuator'
-import BaseController from './base.controller'
+import AbstractController from './abstract.controller'
 
-class VirtualActuatorController extends BaseController{
+class VirtualActuatorController extends AbstractController{
 
   constructor(data) {
     super()

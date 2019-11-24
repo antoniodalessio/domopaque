@@ -1,10 +1,11 @@
-import Environment from '../interface/environment'
-
+import Environment from '@interface/environment'
 import EnvironmentController from "./environment.controller"
 
 /* 
+  --------------------------------------------------------------------
   Builder design pattern
   Create environments, devices, sensors and actuators
+  --------------------------------------------------------------------
 */
 
 class HomeController {
@@ -19,6 +20,7 @@ class HomeController {
   private _sensors = []
   private _actuators = []
   private _virtualActuators = []
+  private _socket:any
 
   constructor() {
     this.reset()
@@ -119,7 +121,7 @@ class HomeController {
   /* JSON RESPONSE  */
   getJSONEnvironments(req, res) {
     let environments = this.environments
-    res.status(200).json({  });
+    res.status(200).json({ environments });
   }
 
   async getJSONEnvironmentByName(req, res) {
@@ -161,14 +163,14 @@ class HomeController {
 
   async getJSONActuatorByName(req, res) {
     let actuator = await this.actuatorByName(req.params.name);
-    res.status(200).json(actuator);
+    res.status(200).json(actuator.getData());
   }
 
-  async setJSONactuatorValue (req, res, socket) {
+  async setJSONactuatorValue (req, res) {
     let actuator = await this.actuatorByName(req.body.name);
     actuator.setValue(parseInt(req.body.value))
     await actuator.refresh()
-    socket.emit('actuator change', {name: req.body.name, value: req.body.value});
+    this.socket.emit('actuator change', {name: req.body.name, value: req.body.value});
     res.status(200).json(actuator.getData());
   }
 
@@ -178,16 +180,17 @@ class HomeController {
   }
 
   // Set a status from app or any client side applications
-  async setJSONVirtualActuatorValue (req, res) {
+  async setJSONVirtualActuatorState (req, res) {
     let actuator = this.virtualActuatorByName(req.body.name);
     await actuator.setValue(parseInt(req.body.value))
     res.status(200).json(actuator.getData());
   }
 
   // Set a value from External Services. Value doesn't change the state
-  setJSONVirtualActuatorState(req, res) {
+  setJSONVirtualActuatorValue(req, res) {
     let actuator = this.virtualActuatorByName(req.body.name);
     actuator.value = parseInt(req.body.value)
+    this.socket.emit("virtual actuator change status", {name: req.body.name, value: actuator.value})
     res.status(200).json(actuator.getData());
   }
 
@@ -242,6 +245,14 @@ class HomeController {
 
   set virtualActuators(val) {
     this._virtualActuators = val;
+  }
+
+  get socket() {
+    return this._socket
+  }
+
+  set socket(val) {
+    this._socket = val;
   }
 
 }

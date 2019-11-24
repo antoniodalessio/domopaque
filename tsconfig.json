@@ -13,16 +13,29 @@
       "reflect-metadata",
       "jasmine"
     ],
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "paths": {
+      "@controller": ["controller/"],
+      "@controller/*": ["controller/*"],
+      "@model": ["model/"],
+      "@model/*": ["model/*"],
+      "@helpers": ["helpers/"],
+      "@helpers/*": ["helpers/*"],
+      "@interface": ["interface/"],
+      "@interface/*": ["interface/*"],
+      "@routes": ["routes/"],
+      "@routes/*": ["routes/*"],
+    }
   },
   "paths": {
-    "@controller": ["./src/controller/*"],
     "*": [
       "node_modules/",
     ],
   },
   "include": [
     "src/**/*.ts",
-    "__tests__/*.*"
+    "src/__tests__/*.*"
   ],
   "exclude": [
     "node_modules",

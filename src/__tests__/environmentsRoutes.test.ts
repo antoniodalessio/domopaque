@@ -1,4 +1,4 @@
-import app from '../src/'
+import app from './../'
 const request = require('supertest')
 var agent = request.agent(app);
 

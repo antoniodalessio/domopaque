@@ -1,13 +1,14 @@
+require('module-alias/register')
 require('dotenv').config()
 var express = require('express')
 import { CronJob } from 'cron'
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
 
-import HomeController from './controller/home.controller'
-import { environmentRoutes, googleHomeRoutes, userRoutes } from './routes/'
+import HomeController from '@controller/home.controller'
+import { environmentRoutes, googleHomeRoutes, userRoutes } from '@routes'
 
 import { config } from './config'
-//import { SensorReadings } from './model/sensorReadings'
+//import { SensorReadings } from '@model/sensorReadings'
 
 let app = express();
 export default app;
@@ -19,18 +20,19 @@ async function initApp() {
   app.setMaxListeners(0);
 
   let server = app.listen(config.serverPort, function () {
-    
     console.log(`Server Running on port ${config.serverPort}!`);
   });
 
-  let socket = setupWebSocket(server) 
   let homeController: HomeController = HomeController.getInstance();
+  await setupWebSocket(server, homeController)
+  homeController.socket.emit("test") 
+  
 
   // setup routes
-  app.use('/api/home/', environmentRoutes(homeController, socket));
+  app.use('/api/home/', environmentRoutes(homeController));
   app.use('/api/googlehome/', googleHomeRoutes())
   app.use('/api/user/', userRoutes())
-  
+
   await homeController.create(config.environments)
   app.emit("appStarted");
   
@@ -38,16 +40,19 @@ async function initApp() {
   //initCron(homeController)
 }
 
-function setupWebSocket(server) {
+async function setupWebSocket(server, homeController) {
   const io = require('socket.io')(server);
-  let socket = undefined
   io.setMaxListeners(0);
-  io.on('connection', (s) => {
-    socket = s
-    socket.setMaxListeners(0);
-    socket.emit('connection init');
-  });
-  return socket
+  return new Promise( (resolve) => {
+    io.on('connection', (s: any) => {
+      homeController.socket = s;
+      resolve(s)
+      s.emit('connection init');
+      s.on("client response", (res) => {
+        console.log(res)
+      })
+    });
+  })
 }
 
 async function initDB() {
