@@ -1,0 +1,1 @@
+{"version":3,"file":"sensorReadings.js","sourceRoot":"","sources":["../../src/model/sensorReadings.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,qCAAiE;AAGjE,IAAa,cAAc,GAA3B,MAAa,cAAc;CAc1B,CAAA;AAXG;IADC,gCAAsB,EAAE;;0CACd;AAGX;IADC,gBAAM,EAAE;;4CACI;AAGb;IADC,gBAAM,EAAE;;iDACS;AAGlB;IADC,gBAAM,EAAE;;6CACK;AAZL,cAAc;IAD1B,gBAAM,EAAE;GACI,cAAc,CAc1B;AAdY,wCAAc"}
