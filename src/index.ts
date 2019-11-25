@@ -24,9 +24,7 @@ async function initApp() {
   });
 
   let homeController: HomeController = HomeController.getInstance();
-  await setupWebSocket(server, homeController)
-  homeController.socket.emit("test") 
-  
+  setupWebSocket(server, homeController)
 
   // setup routes
   app.use('/api/home/', environmentRoutes(homeController));
@@ -40,19 +38,16 @@ async function initApp() {
   //initCron(homeController)
 }
 
-async function setupWebSocket(server, homeController) {
+function setupWebSocket(server, homeController) {
   const io = require('socket.io')(server);
   io.setMaxListeners(0);
-  return new Promise( (resolve) => {
-    io.on('connection', (s: any) => {
-      homeController.socket = s;
-      resolve(s)
-      s.emit('connection init');
-      s.on("client response", (res) => {
-        console.log(res)
-      })
-    });
-  })
+  io.on('connection', (s: any) => {
+    homeController.socket = s;
+    s.emit('connection init');
+    s.on("client response", (res) => {
+      console.log(res)
+    })
+  });
 }
 
 async function initDB() {

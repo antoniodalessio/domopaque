@@ -29,8 +29,7 @@ function initApp() {
             console.log(`Server Running on port ${config_1.config.serverPort}!`);
         });
         let homeController = home_controller_1.default.getInstance();
-        yield setupWebSocket(server, homeController);
-        homeController.socket.emit("test");
+        setupWebSocket(server, homeController);
         // setup routes
         app.use('/api/home/', _routes_1.environmentRoutes(homeController));
         app.use('/api/googlehome/', _routes_1.googleHomeRoutes());
@@ -42,18 +41,13 @@ function initApp() {
     });
 }
 function setupWebSocket(server, homeController) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const io = require('socket.io')(server);
-        io.setMaxListeners(0);
-        return new Promise((resolve) => {
-            io.on('connection', (s) => {
-                homeController.socket = s;
-                resolve(s);
-                s.emit('connection init');
-                s.on("client response", (res) => {
-                    console.log(res);
-                });
-            });
+    const io = require('socket.io')(server);
+    io.setMaxListeners(0);
+    io.on('connection', (s) => {
+        homeController.socket = s;
+        s.emit('connection init');
+        s.on("client response", (res) => {
+            console.log(res);
         });
     });
 }
