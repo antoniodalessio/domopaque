@@ -1,10 +1,13 @@
-import app from './../'
+import App from './../app'
+import { config } from './../config' 
+let app = new App(config)
+let expressApp = app.expressApp
 const request = require('supertest')
-var agent = request.agent(app);
+var agent = request.agent(expressApp);
 
 
 beforeAll(function (done) {
-    app.on("appStarted", function(){
+    expressApp.on("appStarted", function(){
         done();
     });
 });

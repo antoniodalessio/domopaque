@@ -6,7 +6,8 @@ module.exports = {
     ],
     globals: {
         "ts-jest": {
-            tsConfig: "tsconfig.json"
+            tsConfig: "tsconfig.json",
+            enableTsDiagnostics: true
         }
     },
     moduleFileExtensions: [
@@ -16,6 +17,16 @@ module.exports = {
     ],
     transform: {
         "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    transformIgnorePatterns: [
+        "<rootDir>/node_modules/(?!@foo)"
+    ],
+    moduleNameMapper: {
+        "@routes": "<rootDir>/src/routes/",
+        "@controller": "<rootDir>/src/controller/",
+        "@helpers": "<rootDir>/src/helpers/",
+        "@interface": "<rootDir>/src/interface/",
+        "@model": "<rootDir>/src/model/",
     },
     testMatch: [
         "**/domopaque/src/__tests__/**/*.test.(ts|js)"

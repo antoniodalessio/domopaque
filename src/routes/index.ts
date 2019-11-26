@@ -1,6 +1,6 @@
-import environmentRoutes from './environmentRoutes'
-import googleHomeRoutes from './googleHomeRoutes'
-import userRoutes from './userRoutes'
+import environmentRoutes from './environment.routes'
+import googleHomeRoutes from './googleHome.routes'
+import userRoutes from './user.routes'
 
 export {
     environmentRoutes,

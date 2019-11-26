@@ -9,11 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const __1 = require("./../");
+const app_1 = require("./../app");
+const config_1 = require("./../config");
+let app = new app_1.default(config_1.config);
+let expressApp = app.expressApp;
 const request = require('supertest');
-var agent = request.agent(__1.default);
+var agent = request.agent(expressApp);
 beforeAll(function (done) {
-    __1.default.on("appStarted", function () {
+    expressApp.on("appStarted", function () {
         done();
     });
 });

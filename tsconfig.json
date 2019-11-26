@@ -16,16 +16,7 @@
     "moduleResolution": "node",
     "baseUrl": "src",
     "paths": {
-      "@controller": ["controller/"],
-      "@controller/*": ["controller/*"],
-      "@model": ["model/"],
-      "@model/*": ["model/*"],
-      "@helpers": ["helpers/"],
-      "@helpers/*": ["helpers/*"],
-      "@interface": ["interface/"],
-      "@interface/*": ["interface/*"],
-      "@routes": ["routes/"],
-      "@routes/*": ["routes/*"],
+      "@*": ["*"]
     }
   },
   "paths": {
