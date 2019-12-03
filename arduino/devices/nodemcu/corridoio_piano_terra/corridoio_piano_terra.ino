@@ -141,6 +141,16 @@ void handleLucePorta() {
   server.send(200, "application/json", "{ \"value\": \""+  val + "\"}");
 }
 
+void handleLuceGiardinoValue() {
+  int val = rele1.getState();
+  server.send(200, "application/json", "{ \"value\": " + String(val) + "}");
+}
+
+void handleLucePortaValue() {
+  int val = rele2.getState();
+  server.send(200, "application/json", "{ \"value\": " + String(val) + "}");
+}
+
 
 void setup() {
 
@@ -150,6 +160,8 @@ void setup() {
   server.on("/ping", handlePing);
   server.on("/luce_giardino", HTTP_POST, handleLuceGiardino);
   server.on("/luce_porta", HTTP_POST, handleLucePorta);
+  server.on("/luce_giardino", HTTP_GET, handleLuceGiardinoValue);
+  server.on("/luce_porta", HTTP_GET, handleLucePortaValue);
 
   server.begin();
   Serial.println("SERVER BEGIN!!");

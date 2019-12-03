@@ -170,7 +170,9 @@ class HomeController {
     let actuator = await this.actuatorByName(req.body.name);
     actuator.setValue(parseInt(req.body.value))
     await actuator.refresh()
-    this.socket.emit('actuator change', {name: req.body.name, value: req.body.value});
+    if (this.socket) {
+      this.socket.emit('actuator change', {name: req.body.name, value: req.body.value});
+    }
     res.status(200).json(actuator.getData());
   }
 
