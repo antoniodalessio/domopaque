@@ -31,14 +31,3 @@ void Rele::toggle() {
       on();
     }
 }
-
-/*String Rele::stringJson() {
-  String str = "";
-  str += "{";
-  str += helpers.jsonKeyValue("name", name, false);
-  str += helpers.jsonKeyValue("alias", name, false);
-  str += " \"range\": [],";
-  str += helpers.jsonKeyValue("step", String(step), false);
-  str += helpers.jsonKeyValue("value", String(!digitalRead(pin)), true);
-  return str;
-}*/

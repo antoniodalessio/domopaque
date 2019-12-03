@@ -1,9 +1,8 @@
 #include <ArduinoJson.h>
-
 #include <ESP8266WebServer.h>
 #include "Switch.h"
 #include "Rele.h"
-//#include "Helpers.h"
+#include "Helpers.h"
 
 //BEGIN SETUP WIFI
 #ifndef STASSID
@@ -13,7 +12,7 @@
 
 #define NAME "corridoio_piano_terra";
 
-//Helpers helpers;
+Helpers helpers();
 
 const char* ssid     = STASSID;
 const char* password = STAPSK;
@@ -21,14 +20,14 @@ const uint16_t port = 3005;
 String ip;
 const char* deviceName = NAME;
 
+ESP8266WebServer server(port);
+// END SETUP WIFI
+
+// SETUP ACTUATORS AND SENSORS
 Switch switch1(4); //D2
 Switch switch2(2); //D4
 Rele rele1(5, "luce_giardino", "luce_giardino", 1); //D1
 Rele rele2(0, "luce_porta", "luce_porta", 1); //D3
-
-
-ESP8266WebServer server(port);
-// END SETUP WIFI
 
 String IpAddress2String(const IPAddress& ipAddress){
   return String(ipAddress[0]) + String(".") +\
@@ -37,54 +36,43 @@ String IpAddress2String(const IPAddress& ipAddress){
     String(ipAddress[3]);
 }
 
-String jsonKeyValue(String key, String value, boolean final) {
-  String str = "";
-  str += " \"" + key + "\":";
-  if (final) {
-    str += " \"" + value + "\"";
-  }else{
-    str += " \"" + value + "\",";
-  }
-  return str;
-}
-
-String actuatorStringJson(String name, String alias, int step, int value) {
-  String str = "";
-  str += "{";
-  str += jsonKeyValue("name", name, false);
-  str += jsonKeyValue("alias", alias, false);
-  str += " \"range\": [],";
-  str += jsonKeyValue("step", String(step), false);
-  str += jsonKeyValue("value", String(value), true);
-  str += "}";
-  return str;
-}
-
-
 
 void handlePing() {
 
-
-  String message = "{ ";
-
-    message += jsonKeyValue("deviceName", deviceName, false);
-    message += jsonKeyValue("ip", ip, false);
-
-    message += " \"sensors\":[";
-    message += "],";
-
-    message += " \"actuators\":[";
-
-      message += actuatorStringJson(rele1.name, rele1.name, rele1.step, rele1.getState());
-      message += ",";
-      message += actuatorStringJson(rele2.name, rele2.name, rele2.step, rele2.getState());
-      
-      message += "]";
-    
-    message += " }";
+  // HOW TO CONVERT JSON QUICKLY: https://arduinojson.org/v6/assistant/
   
-  Serial.println("SERVER RESPONSE");
-  server.send(200, "application/json", message);
+  DynamicJsonDocument doc(2048);
+  doc["deviceName"] = deviceName;
+  doc["ip"] = ip;
+  JsonArray sensors = doc.createNestedArray("sensors");
+  JsonArray actuators = doc.createNestedArray("actuators");
+  
+  //rele 1
+  JsonObject actuators_0 = actuators.createNestedObject();
+  actuators_0["name"] = rele1.name;
+  actuators_0["alias"] = rele1.name;
+
+  JsonArray actuators_0_range = actuators_0.createNestedArray("range");
+  actuators_0_range.add("0");
+  actuators_0_range.add("1");
+  actuators_0["step"] = 1;
+  actuators_0["value"] = String(rele1.getState());
+
+  //rele 2
+  JsonObject actuators_1 = actuators.createNestedObject();
+  actuators_1["name"] = rele2.name;
+  actuators_1["alias"] = rele2.name;
+
+  JsonArray actuators_1_range = actuators_1.createNestedArray("range");
+  actuators_1_range.add("0");
+  actuators_1_range.add("1");
+  actuators_1["step"] = 1;
+  actuators_1["value"] = String(rele2.getState());
+  
+  
+  String output = "";
+  serializeJson(doc, output);
+  server.send(200, "application/json", output);
 }
 
 void setupWifi() {
@@ -152,6 +140,19 @@ void handleLucePortaValue() {
 }
 
 
+void toggleRele1() {
+  rele1.toggle();
+}
+
+void toggleRele2() {
+  rele2.toggle();
+}
+
+void handleSwitch() {
+  switch1.onChange(toggleRele1);
+  switch2.onChange(toggleRele2);
+}
+
 void setup() {
 
   Serial.begin(9600);
@@ -165,20 +166,6 @@ void setup() {
 
   server.begin();
   Serial.println("SERVER BEGIN!!");
-}
-
-
-void toggleRele1() {
-  rele1.toggle();
-}
-
-void toggleRele2() {
-  rele2.toggle();
-}
-
-void handleSwitch() {
-  switch1.onChange(toggleRele1);
-  switch2.onChange(toggleRele2);
 }
 
 void loop() {
