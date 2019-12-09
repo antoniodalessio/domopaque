@@ -1,4 +1,7 @@
 #include <Arduino.h>
+#include "Led.h"
+
+//typedef Led LED;
 
 class Rele {
   
@@ -6,10 +9,12 @@ class Rele {
     int pin;
     
   public:
-    Rele(int pin, String name, String alias, int step);
+    Rele(int pin, String name, String alias, int step, int pinLed);
     String name;
     String alias;
     int step;
+    int pinLed;
+    Led led;
     void init();
     int getState();
     void on();

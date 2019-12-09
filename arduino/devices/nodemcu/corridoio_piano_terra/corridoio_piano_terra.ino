@@ -2,17 +2,14 @@
 #include <ESP8266WebServer.h>
 #include "Switch.h"
 #include "Rele.h"
-#include "Helpers.h"
+
+#define NAME "corridoio_piano_terra";
 
 //BEGIN SETUP WIFI
 #ifndef STASSID
 #define STASSID "Vodafone-50278807"
 #define STAPSK  "adhbm3yv8j2lx3i"
 #endif
-
-#define NAME "corridoio_piano_terra";
-
-Helpers helpers();
 
 const char* ssid     = STASSID;
 const char* password = STAPSK;
@@ -24,10 +21,11 @@ ESP8266WebServer server(port);
 // END SETUP WIFI
 
 // SETUP ACTUATORS AND SENSORS
-Switch switch1(4); //D2
+Switch switch1(14); //D2
 Switch switch2(2); //D4
-Rele rele1(5, "luce_giardino", "luce_giardino", 1); //D1
-Rele rele2(0, "luce_porta", "luce_porta", 1); //D3
+Rele rele1(5, "luce_giardino", "luce_giardino", 1, 12); //D1 rele //D5 Led
+Rele rele2(0, "luce_porta", "luce_porta", 1, 13); //D3 Rele //D6 Led
+Rele rele3(15, "anti_zanzare", "anti_zanzare", 1, -1); //D3 Rele //D6 Led
 
 String IpAddress2String(const IPAddress& ipAddress){
   return String(ipAddress[0]) + String(".") +\
@@ -56,7 +54,7 @@ void handlePing() {
   actuators_0_range.add("0");
   actuators_0_range.add("1");
   actuators_0["step"] = 1;
-  actuators_0["value"] = String(rele1.getState());
+  actuators_0["value"] = rele1.getState();
 
   //rele 2
   JsonObject actuators_1 = actuators.createNestedObject();
@@ -67,7 +65,7 @@ void handlePing() {
   actuators_1_range.add("0");
   actuators_1_range.add("1");
   actuators_1["step"] = 1;
-  actuators_1["value"] = String(rele2.getState());
+  actuators_1["value"] = rele2.getState();
   
   
   String output = "";
