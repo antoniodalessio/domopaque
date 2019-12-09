@@ -83,7 +83,6 @@ class HomeController {
     return this.sensors;
   }
 
-
   async actuatorByName(name: String) {
 
     this.actuators.length == 0 && this.listActuators()
