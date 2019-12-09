@@ -1,7 +1,7 @@
 import Environment from '@interface/environment'
 import EnvironmentController from "./environment.controller"
 
-/* 
+/*
   --------------------------------------------------------------------
   Builder design pattern
   Create environments, devices, sensors and actuators
@@ -15,7 +15,7 @@ class HomeController {
 
   private _configEnvironments
   private _environmentsController
-  private _environments: Environment[] 
+  private _environments: Environment[]
   private _devices = []
   private _sensors = []
   private _actuators = []
@@ -83,10 +83,11 @@ class HomeController {
     return this.sensors;
   }
 
+
   async actuatorByName(name: String) {
-    
+
     this.actuators.length == 0 && this.listActuators()
-  
+
     let actuatorController = this.actuators.find((actuator) => { return actuator.name == name})
     await actuatorController.refresh();
 
@@ -95,7 +96,7 @@ class HomeController {
 
   listVirtualActuators() {
     this.virtualActuators = [];
-    
+
     Object.keys(this.environmentsController).forEach((key) => {
       this.virtualActuators = this.virtualActuators.concat(this.environmentsController[key].virtualActuatorsController)
     })
@@ -110,7 +111,7 @@ class HomeController {
   getDevices() {
     return Object.keys(this.environmentsController).map((key) => {
       return (this.environmentsController[key]).devicesController;
-      
+
       /*Object.keys(devicesController).forEach((key2) => {
 
       })
@@ -211,7 +212,7 @@ class HomeController {
 
   set environmentsController(envs) {
     this._environmentsController = envs
-  } 
+  }
 
   get environments() {
     return this._environments;
@@ -219,7 +220,7 @@ class HomeController {
 
   set environments(envs) {
     this._environments = envs
-  } 
+  }
 
   get devices() {
     return this._devices;
