@@ -1,34 +1,36 @@
-import Environment from '../model/environment'
-import Device from '../model/device';
-import Sensor from '../model/sensor';
+import Environment from '../interface/environment'
+import Device from '../interface/device';
+import Sensor from '../interface/sensor';
 import DeviceController from './device.controller'
 
 import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
 
 import { config } from '../config'
+import VirtualActuatorController from './virtualactuator.controller';
 
 export default class EnvironmentController implements Environment{
 	
   sensors:Sensor[] = []
 
-  name: string;
-  type: string;
-  color: string;
-  ips: [];
+  name: string
+  type: string
+  color: string
+  ips: []
   lastTimestampPing: number
   inside: boolean
+  virtualActuators
   private _devices:Device[] = [];
   private _devicesController = {};
+  private _virtualActuatorsController = []
 
 
 	constructor(environment) {
-    
     this.name =  environment.name,
 		this.color = environment.color,
     this.type =  environment.type,
 		this.ips =  environment.ips
-    this.inside = environment.inside
-    
+    this.inside = environment.inside,
+    this.virtualActuators = environment.external_services && environment.external_services.actuators ?  environment.external_services.actuators : []
   }
 
   async createDevices() {
@@ -36,7 +38,7 @@ export default class EnvironmentController implements Environment{
       let url = `http://${ip}:${config.devicePort}/ping`
       let deviceName = `${this.name}_${ip}`
 
-      let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url)])
+      let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url, {}, `Timeout del server ${url}`)])
       let deviceData = await race;
 
       if (!deviceData) {
@@ -66,16 +68,28 @@ export default class EnvironmentController implements Environment{
     }
   }
 
+  async createVirtualActuators() {
+    this.virtualActuatorsController = []
+    for (const actuator of this.virtualActuators) {
+      let actuatorController = new VirtualActuatorController(actuator)
+      this.virtualActuatorsController.push(actuatorController)
+    }
+  }
+
 
 	async getData() {
-    return {
+
+    let data: Environment = {
       name: this.name,
       type: this.type,
       color: this.color,
       ips: this.ips,
       devices: this.devices,
-      inside: this.inside
+      inside: this.inside,
+      virtualActuators: this.virtualActuatorsController.map((controller) =>  {return controller.getData()})
     }
+
+    return data
   }
 
   async refresh() {
@@ -97,5 +111,15 @@ export default class EnvironmentController implements Environment{
   set devicesController(devicesController) {
     this._devicesController = devicesController
   }
+
+  get virtualActuatorsController() {
+    return this._virtualActuatorsController;
+  }
+
+  set virtualActuatorsController(virtualActuatorsController) {
+    this._virtualActuatorsController = virtualActuatorsController
+  }
+
+  
 
 }

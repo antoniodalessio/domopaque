@@ -1,33 +1,32 @@
 import { config } from '../config'
-import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
+import { fetchPromise } from '@helpers/promiseHelper'
+import Actuator from '@interface/actuator'
+import AbstractController from './abstract.controller'
 
-class Actuator {
+class ActuatorController extends AbstractController{
     
-  private _value: any
-  private _name
-  private _mainName
-  private _data
-  
   constructor(data, actuator) {
+    super()
     this.data = data;
     this.name = `${data.ip}_${actuator.name}`
     this.mainName = `${actuator.name}`
     this.value = actuator.value
   }
 
-
   getData() {
-    return {
+    let data: Actuator = {
       name: this.name,
+      friendlyName: this.mainName,
       value: this.value,
       type: 'rele',
       timestamp: Date.now()
     }
+    return data;
   }
 
   async refresh() {
     let url = `http://${this.data.ip}:${config.devicePort}/${this.mainName}`
-    let res:any = await fetchPromise(url)
+    let res:any = await fetchPromise(url, {}, `No data retrived from ${this.mainName}`)
     this.value = res.value
   }
 
@@ -42,42 +41,14 @@ class Actuator {
         body: JSON.stringify({
         value: `${val}`
         })
-      })
+      }, `set value failed on ${this.mainName}`)
   }
 
-
-  set value(val) {
-    this._value = val;
-  }
-
-  get value() {
-      return this._value
-  }
-
-  set name(val) {
-    this._name = val;
-  }
-
-  get name() {
-      return this._name
-  }
-
-  set mainName(val) {
-    this._mainName = val;
-  }
-
-  get mainName() {
-      return this._mainName
-  }
-
-  get data() {
-    return this._data
-  }
-
-  set data(val) {
-    this._data = val
+  async toggle() {
+    await this.refresh()
+    await this.setValue(parseInt(this.value) ^1)
   }
 
 }
 
-export default Actuator;
+export default ActuatorController;

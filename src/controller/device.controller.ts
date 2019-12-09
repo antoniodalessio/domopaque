@@ -1,134 +1,127 @@
-import Device from './../model/device'
-import Sensor from './../model/sensor'
-import Environment from '../model/environment';
-import Actuator from '../model/actuator';
+import Device from '../interface/device'
+import Environment from '../interface/environment';
 import SensorController from './sensor.controller';
 import ActuatorController from './actuator.controller';
 
-class DeviceController implements Device{
+class DeviceController{
     
-    name: string = '';
-    type: string = '';
-    ip: string = '';
-    private _sensors: Sensor[] = [];
-    private _sensorControllers = [];
-    private _environment: Environment;
-    private _deviceData: any;
-    error:any;
+  private _name: string = '';
+  private _type: string = '';
+  private _ip: string = '';
+  private _sensorControllers = [];
+  private _actuatorControllers = []
+  private _environment: Environment;
+  private _deviceData: any;
+  private error:any;
+  
+  constructor(environment, deviceData) {
+    this.environment = environment;
+    this.deviceData = deviceData;
+    this.name = `${environment.name}_${deviceData.ip}`;
+    this.ip =  deviceData.ip;
+    deviceData.error && (this.error = deviceData.error)
+    this.setSensors()
+    this.setActuators()
+  }
 
-    private _actuatorControllers = []
-    private _actuators: Actuator[] = []
-
-    sensorTypes: string[] = ['temperature', 'umidity', 'raindrop'];
-
-    constructor(environment, deviceData) {
-        this.environment = environment;
-        this.deviceData = deviceData;
-        this.name = `${environment.name}_${deviceData.ip}`;
-        this.ip =  deviceData.ip;
-        if (deviceData.error) {
-            this.error = deviceData.error
-        }
-        this.setSensors()
-        this.setActuators()
+  getData() {
+    let data: Device = {
+      name: this.name,
+      ip: this.ip,
+      type: this.type,
+      sensors: this.sensorControllers.map((sensorController) => {return sensorController.getData()}),
+      actuators: this.actuatorControllers.map((actuatorController) => {return actuatorController.getData()}),
     }
 
-    getData() {
-        let returnObj = {
-            name: this.name,
-            ip: this.ip,
-            type: this.type,
-            sensors: this.sensors,
-            actuators: this.actuators
-        }
+    this.error && (data.error = this.error)
+    
+    return data
+  }
 
-        if (this.error) {
-            returnObj["error"] = this.error
-        }
-        return returnObj
+  setSensors() {
+    if (this.deviceData.sensors && this.deviceData.sensors.length > 0 ) {
+      this.sensorControllers = this.deviceData.sensors.map((sensor) => {
+        let sensorController = new SensorController(this.getData(), sensor)
+        return sensorController
+      })
     }
+  }
 
-    setSensors() {
-        this.sensors = []
-        this.sensorControllers = []
-        if (this.deviceData.sensors && this.deviceData.sensors.length > 0) {
-            for (let sensor of this.deviceData.sensors) {
-                let sensorController = new SensorController(this.getData(), sensor)
-                this.sensorControllers.push(sensorController)
-                this.sensors.push(sensorController.getData())
-            }
-        }
+  setActuators() {
+    if (this.deviceData.actuators && this.deviceData.actuators.length > 0 ) {
+      this.actuatorControllers = this.deviceData.actuators.map((actuator) => {
+        let actuatorControllers = new ActuatorController(this.getData(), actuator)
+        return actuatorControllers
+      })
     }
+  }
 
-    setActuators() {
-        this.actuators = []
-        this.actuatorControllers = []
-        if (this.deviceData.actuators && this.deviceData.actuators.length > 0) {
-            for (let actuator of this.deviceData.actuators) {
-                let actuatorController = new ActuatorController(this.getData(), actuator )
-                this.actuatorControllers.push(actuatorController)
-                this.actuators.push(actuatorController.getData())
-            }
-        }
-    }
+  getActuatorByName(name) {
+    let actuators = this.actuatorControllers.map((actuatorController) => {return actuatorController.getData()})
+    return actuators.find((actuator) => {actuator.name == name});
+  }
 
-    getActuatorByName(name) {
-        return this.actuators.find((actuator) => {actuator.name == name});
-    }
+  refresh(deviceData) {
+      this.deviceData = deviceData;
+      this.setSensors()
+      this.setActuators()
+  }
 
-    refresh(deviceData) {
-        this.deviceData = deviceData;
-        this.setSensors()
-        this.setActuators()
-    }
+  set environment(environment) {
+      this._environment = environment;
+  }
 
-    set environment(environment) {
-        this._environment = environment;
-    }
+  get environment() {
+      return this._environment;
+  }
 
-    get environment() {
-        return this._environment;
-    }
+  set deviceData(deviceData) {
+      this._deviceData = deviceData;
+  }
 
-    set deviceData(deviceData) {
-        this._deviceData = deviceData;
-    }
+  get deviceData() {
+      return this._deviceData;
+  }
 
-    get deviceData() {
-        return this._deviceData;
-    }
+  set actuatorControllers(actuatorControllers) {
+      this._actuatorControllers = actuatorControllers;
+  }
 
-    get sensors() {
-        return this._sensors
-    }
+  get actuatorControllers() {
+      return this._actuatorControllers;
+  }
 
-    set sensors(sensors) {
-        this._sensors = sensors
-    }
+  set sensorControllers(sensorControllers) {
+      this._sensorControllers = sensorControllers;
+  }
 
-    get actuators() {
-        return this._actuators
-    }
+  get sensorControllers() {
+      return this._sensorControllers;
+  }
 
-    set actuators(actuators) {
-        this._actuators = actuators
-    }
+  get name() {
+    return this._name
+  }
 
-    set actuatorControllers(actuatorControllers) {
-        this._actuatorControllers = actuatorControllers;
-    }
+  set name(value) {
+    this._name = value
+  }
 
-    get actuatorControllers() {
-        return this._actuatorControllers;
-    }
+  get type() {
+    return this._type
+  }
 
-    set sensorControllers(sensorControllers) {
-        this._sensorControllers = sensorControllers;
-    }
+  set type(value) {
+    this._type = value
+  }
 
-    get sensorControllers() {
-        return this._sensorControllers;
-    }
+  get ip() {
+    return this._ip
+  }
+
+  set ip(value) {
+    this._ip = value
+  }
 }
 
 export default DeviceController;

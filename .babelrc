@@ -9,10 +9,10 @@
           "root": ["./src"],
           "alias": {
             "@controller": "./src/controller",
-            "@controller/*": "./src/controller/*",
-          },
-        },
-      ],
-    ],
+            "@controller/*": "./src/controller/*"
+          }
+        }
+      ]
+    ]
   }
   

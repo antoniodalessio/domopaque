@@ -1,27 +1,53 @@
-import Environment from '../model/environment'
-
+import Environment from '@interface/environment'
 import EnvironmentController from "./environment.controller"
+
+/* 
+  --------------------------------------------------------------------
+  Builder design pattern
+  Create environments, devices, sensors and actuators
+  --------------------------------------------------------------------
+*/
 
 class HomeController {
 
+  // Singleton Pattern instance
+  private static instance: HomeController;
+
+  private _configEnvironments
   private _environmentsController
   private _environments: Environment[] 
   private _devices = []
   private _sensors = []
   private _actuators = []
+  private _virtualActuators = []
+  private _socket:any
 
   constructor() {
     this.reset()
   }
 
+  public static getInstance(): HomeController {
+    if (!HomeController.instance) {
+      HomeController.instance = new HomeController();
+    }
+
+    return HomeController.instance;
+}
+
   async create(environments) {
+    this.configEnvironments = environments
     this.reset()
     for (const environment of environments) {
       let environmentController = new EnvironmentController(environment)
       this.environmentsController[environment.name] = environmentController
       await environmentController.createDevices()
+      await environmentController.createVirtualActuators()
       let data = await environmentController.getData()
       this.environments.push(data)
+
+      await this.listSensors()
+      await this.listActuators()
+
     }
   }
 
@@ -44,17 +70,140 @@ class HomeController {
     return this.actuators;
   }
 
-  async actuatorByName(name: String) {
-    if (this.actuators.length == 0) {
-      this.listActuators()
-    }
+  async listSensors() {
+    this.sensors = [];
 
+    Object.keys(this.environmentsController).forEach((key) => {
+      let devicesController = (this.environmentsController[key]).devicesController;
+      Object.keys(devicesController).forEach((key2) => {
+        this.sensors = this.sensors.concat(devicesController[key2].sensorControllers);
+      })
+    })
+
+    return this.sensors;
+  }
+
+  async actuatorByName(name: String) {
+    
+    this.actuators.length == 0 && this.listActuators()
+  
     let actuatorController = this.actuators.find((actuator) => { return actuator.name == name})
     await actuatorController.refresh();
 
     return actuatorController
   }
 
+  listVirtualActuators() {
+    this.virtualActuators = [];
+    
+    Object.keys(this.environmentsController).forEach((key) => {
+      this.virtualActuators = this.virtualActuators.concat(this.environmentsController[key].virtualActuatorsController)
+    })
+  }
+
+  virtualActuatorByName(name: String) {
+    this.virtualActuators.length == 0 && this.listVirtualActuators()
+    let actuatorController = this.virtualActuators.find((actuator) => { return actuator.name == name})
+    return actuatorController
+  }
+
+  getDevices() {
+    return Object.keys(this.environmentsController).map((key) => {
+      return (this.environmentsController[key]).devicesController;
+      
+      /*Object.keys(devicesController).forEach((key2) => {
+
+      })
+      //return (this.environmentsController[key]).devicesController;*/
+    })
+  }
+
+  /* JSON RESPONSE  */
+  getJSONEnvironments(req, res) {
+    let environments = this.environments
+    res.status(200).json({ environments });
+  }
+
+  async getJSONEnvironmentByName(req, res) {
+    let name = req.params.name
+    let environmentController = this.environmentsController[name]
+    if (environmentController) {
+      await environmentController.refresh()
+      let data = await environmentController.getData()
+      res.status(200).json(data);
+    }else{
+      res.status(200).json({error: 'no environment found'});
+    }
+  }
+
+  async getJSONDevices(req, res) {
+    res.status(200).json(this.getDevices());
+  }
+
+  async refresh(req, res) {
+    try {
+      await this.create(this.configEnvironments)
+      res.status(200).json({ msg: 'ok' });
+    }catch{
+      res.status(200).json({ msg: 'ok' });
+    }
+  }
+
+  //@todo
+  async getJSONDeviceByName(req, res) {
+    res.status(200).json({});
+  }
+
+  async getJSONActuators(req, res) {
+    let actuators = this.listActuators().map( (actuator) => {
+      return actuator.getData()
+    });
+    res.status(200).json(actuators);
+  }
+
+  async getJSONActuatorByName(req, res) {
+    let actuator = await this.actuatorByName(req.params.name);
+    res.status(200).json(actuator.getData());
+  }
+
+  async setJSONactuatorValue (req, res) {
+    let actuator = await this.actuatorByName(req.body.name);
+    actuator.setValue(parseInt(req.body.value))
+    await actuator.refresh()
+    if (this.socket) {
+      this.socket.emit('actuator change', {name: req.body.name, value: req.body.value});
+    }
+    res.status(200).json(actuator.getData());
+  }
+
+  async getJSONVirtualActuatorByName (req, res) {
+    let actuator = await this.virtualActuatorByName(req.params.name);
+    res.status(200).json(actuator.getData());
+  }
+
+  // Set a status from app or any client side applications
+  async setJSONVirtualActuatorState (req, res) {
+    let actuator = this.virtualActuatorByName(req.body.name);
+    await actuator.setValue(parseInt(req.body.value))
+    res.status(200).json(actuator.getData());
+  }
+
+  // Set a value from External Services. Value doesn't change the state
+  setJSONVirtualActuatorValue(req, res) {
+    let actuator = this.virtualActuatorByName(req.body.name);
+    actuator.value = parseInt(req.body.value)
+    this.socket.emit("virtual actuator change status", {name: req.body.name, value: actuator.value})
+    res.status(200).json(actuator.getData());
+  }
+
+  /* GETTER AND SETTER */
+  get configEnvironments() {
+    return this._configEnvironments
+  }
+
+  set configEnvironments(val) {
+    this._configEnvironments = val
+  }
 
   get environmentsController() {
     return this._environmentsController
@@ -80,12 +229,32 @@ class HomeController {
     return this._sensors
   }
 
+  set sensors(value) {
+    this._sensors = value
+  }
+
   get actuators() {
     return this._actuators
   }
 
   set actuators(val) {
     this._actuators = val;
+  }
+
+  get virtualActuators() {
+    return this._virtualActuators
+  }
+
+  set virtualActuators(val) {
+    this._virtualActuators = val;
+  }
+
+  get socket() {
+    return this._socket
+  }
+
+  set socket(val) {
+    this._socket = val;
   }
 
 }

@@ -1,6 +1,8 @@
 export const config = {
 	fetchTimeout: 4000,
 	devicePort: '3005',
+	serverPort: 3001,
+	modelPath: '/model/*.js',
 	environments: [
 		{
 			name: 'soggiorno',
@@ -8,20 +10,17 @@ export const config = {
 			color: 'green',
 			inside: true,
 			floor: 0,
-			external_services: [
-				{
-					name: 'iftt',
-					type: 'webhook',
-					actuators: [
-						{
-							name: 'luce_divano',
-							on_event: 'divanoon',
-							off_event: 'divanooff',
-							status_event: '?'
-						}
-					]
-				}
-			]			
+			external_services: {
+				actuators: [
+					{
+						type: 'iftt.webhook',
+						name: 'luce_divano',
+						on_event: 'divanoon',
+						off_event: 'divanooff',
+						status_event: '?'
+					}
+				]
+			}			
 		},
 		{
 			name: 'veranda',
@@ -32,10 +31,17 @@ export const config = {
 		},
 		{
 			name: 'corridoio_piano_primo',
-			ips: ['192.168.1.11'],
+			ips: ['192.168.1.12'],
 			color: 'yellow',
 			inside: true,
 			floor: 1,
+		},
+		{
+			name: 'corridoio_piano_terra',
+			ips: ['192.168.1.11'],
+			color: 'blu',
+			inside: true,
+			floor: 0,
 		},
 	]
 }

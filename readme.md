@@ -115,3 +115,20 @@ Example
   ]
 }
 ```
+
+
+GENERATE MIGRATION
+```
+npm run typeorm migration:generate -- -n migrationNameHere
+```
+
+RUN MIGRATION
+```
+npm run typeorm migration:run
+```
+
+You can create a new entity using CLI:
+
+```
+typeorm entity:create -n User
+```
