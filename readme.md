@@ -8,6 +8,8 @@ The sensors and actuators can sometimes be embedded in the controller. An exampl
 Most of devices are implements on nodemcu esp while for server has been used raspberry PI.
 When the server starts, ping devices ip readed in the configuration files and devices reply with information to server about its sensors and actuators. If any device doesn't responding, server act fault tolerance and doesn't crash.
 
+Having more devices means horizontal scalability. 
+
 Example
 ```json
 {
