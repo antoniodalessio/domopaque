@@ -18,6 +18,7 @@ class App {
     this.expressApp = express();
     this.initApp()
   }
+  
 
   initApp() {
     this.expressApp.use(express.json());
