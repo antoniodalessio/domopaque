@@ -18,7 +18,7 @@ class App {
     this.expressApp = express();
     this.initApp()
   }
-  
+
 
   initApp() {
     this.expressApp.use(express.json());
@@ -68,6 +68,7 @@ class App {
     }
   }
 
+  
   // GETTER & SETTER
   public set expressApp(val) {
     this._expressApp = val
