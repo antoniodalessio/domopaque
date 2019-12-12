@@ -178,6 +178,7 @@ class HomeController {
     }
     res.status(200).json(actuator.getData());
   }
+  
 
   /* GETTER AND SETTER */
   get configEnvironments() {
