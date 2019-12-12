@@ -12,19 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const device_controller_1 = require("./device.controller");
 const promiseHelper_1 = require("./../helpers/promiseHelper");
 const config_1 = require("../config");
-const virtualactuator_controller_1 = require("./virtualactuator.controller");
 class EnvironmentController {
     constructor(environment) {
         this.sensors = [];
         this._devices = [];
         this._devicesController = {};
-        this._virtualActuatorsController = [];
         this.name = environment.name,
             this.color = environment.color,
             this.type = environment.type,
             this.ips = environment.ips;
-        this.inside = environment.inside,
-            this.virtualActuators = environment.external_services && environment.external_services.actuators ? environment.external_services.actuators : [];
+        this.inside = environment.inside;
     }
     createDevices() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -58,15 +55,6 @@ class EnvironmentController {
             }
         });
     }
-    createVirtualActuators() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.virtualActuatorsController = [];
-            for (const actuator of this.virtualActuators) {
-                let actuatorController = new virtualactuator_controller_1.default(actuator);
-                this.virtualActuatorsController.push(actuatorController);
-            }
-        });
-    }
     getData() {
         return __awaiter(this, void 0, void 0, function* () {
             let data = {
@@ -75,8 +63,7 @@ class EnvironmentController {
                 color: this.color,
                 ips: this.ips,
                 devices: this.devices,
-                inside: this.inside,
-                virtualActuators: this.virtualActuatorsController.map((controller) => { return controller.getData(); })
+                inside: this.inside
             };
             return data;
         });
@@ -97,12 +84,6 @@ class EnvironmentController {
     }
     set devicesController(devicesController) {
         this._devicesController = devicesController;
-    }
-    get virtualActuatorsController() {
-        return this._virtualActuatorsController;
-    }
-    set virtualActuatorsController(virtualActuatorsController) {
-        this._virtualActuatorsController = virtualActuatorsController;
     }
 }
 exports.default = EnvironmentController;

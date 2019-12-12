@@ -21,7 +21,6 @@ class HomeController {
         this._devices = [];
         this._sensors = [];
         this._actuators = [];
-        this._virtualActuators = [];
         this.reset();
     }
     static getInstance() {
@@ -38,7 +37,7 @@ class HomeController {
                 let environmentController = new environment_controller_1.default(environment);
                 this.environmentsController[environment.name] = environmentController;
                 yield environmentController.createDevices();
-                yield environmentController.createVirtualActuators();
+                //await environmentController.createVirtualActuators()
                 let data = yield environmentController.getData();
                 this.environments.push(data);
                 yield this.listSensors();
@@ -80,17 +79,21 @@ class HomeController {
             return actuatorController;
         });
     }
+    // @deprecated
+    /*
     listVirtualActuators() {
-        this.virtualActuators = [];
-        Object.keys(this.environmentsController).forEach((key) => {
-            this.virtualActuators = this.virtualActuators.concat(this.environmentsController[key].virtualActuatorsController);
-        });
-    }
-    virtualActuatorByName(name) {
-        this.virtualActuators.length == 0 && this.listVirtualActuators();
-        let actuatorController = this.virtualActuators.find((actuator) => { return actuator.name == name; });
-        return actuatorController;
-    }
+      this.virtualActuators = [];
+  
+      Object.keys(this.environmentsController).forEach((key) => {
+        this.virtualActuators = this.virtualActuators.concat(this.environmentsController[key].virtualActuatorsController)
+      })
+    }*/
+    // @deprecated
+    /*virtualActuatorByName(name: String) {
+      this.virtualActuators.length == 0 && this.listVirtualActuators()
+      let actuatorController = this.virtualActuators.find((actuator) => { return actuator.name == name})
+      return actuatorController
+    }*/
     getDevices() {
         return Object.keys(this.environmentsController).map((key) => {
             return (this.environmentsController[key]).devicesController;
@@ -160,31 +163,32 @@ class HomeController {
             let actuator = yield this.actuatorByName(req.body.name);
             actuator.setValue(parseInt(req.body.value));
             yield actuator.refresh();
-            this.socket.emit('actuator change', { name: req.body.name, value: req.body.value });
+            if (this.socket) {
+                this.socket.emit('actuator change', { name: req.body.name, value: req.body.value });
+            }
             res.status(200).json(actuator.getData());
         });
     }
-    getJSONVirtualActuatorByName(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let actuator = yield this.virtualActuatorByName(req.params.name);
-            res.status(200).json(actuator.getData());
-        });
+    // @deprecated
+    /*async getJSONVirtualActuatorByName (req, res) {
+      let actuator = await this.virtualActuatorByName(req.params.name);
+      res.status(200).json(actuator.getData());
     }
+  
     // Set a status from app or any client side applications
-    setJSONVirtualActuatorState(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let actuator = this.virtualActuatorByName(req.body.name);
-            yield actuator.setValue(parseInt(req.body.value));
-            res.status(200).json(actuator.getData());
-        });
+    async setJSONVirtualActuatorState (req, res) {
+      let actuator = this.virtualActuatorByName(req.body.name);
+      await actuator.setValue(parseInt(req.body.value))
+      res.status(200).json(actuator.getData());
     }
+  
     // Set a value from External Services. Value doesn't change the state
     setJSONVirtualActuatorValue(req, res) {
-        let actuator = this.virtualActuatorByName(req.body.name);
-        actuator.value = parseInt(req.body.value);
-        this.socket.emit("virtual actuator change status", { name: req.body.name, value: actuator.value });
-        res.status(200).json(actuator.getData());
-    }
+      let actuator = this.virtualActuatorByName(req.body.name);
+      actuator.value = parseInt(req.body.value)
+      this.socket.emit("virtual actuator change status", {name: req.body.name, value: actuator.value})
+      res.status(200).json(actuator.getData());
+    }*/
     /* GETTER AND SETTER */
     get configEnvironments() {
         return this._configEnvironments;
@@ -219,12 +223,14 @@ class HomeController {
     set actuators(val) {
         this._actuators = val;
     }
-    get virtualActuators() {
-        return this._virtualActuators;
+    // @deprecated
+    /*get virtualActuators() {
+      return this._virtualActuators
     }
+  
     set virtualActuators(val) {
-        this._virtualActuators = val;
-    }
+      this._virtualActuators = val;
+    }*/
     get socket() {
         return this._socket;
     }

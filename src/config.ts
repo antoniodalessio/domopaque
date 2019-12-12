@@ -10,20 +10,9 @@ export const config = {
 			color: 'green',
 			inside: true,
 			floor: 0,
-			external_services: {
-				actuators: [
-					{
-						type: 'iftt.webhook',
-						name: 'luce_divano',
-						on_event: 'divanoon',
-						off_event: 'divanooff',
-						status_event: '?'
-					}
-				]
-			}			
 		},
 		{
-			name: 'veranda',
+			name: 'backyard',
 			ips: ['192.168.1.10'],
 			color: 'purple',
 			inside: false,

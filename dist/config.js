@@ -12,20 +12,9 @@ exports.config = {
             color: 'green',
             inside: true,
             floor: 0,
-            external_services: {
-                actuators: [
-                    {
-                        type: 'iftt.webhook',
-                        name: 'luce_divano',
-                        on_event: 'divanoon',
-                        off_event: 'divanooff',
-                        status_event: '?'
-                    }
-                ]
-            }
         },
         {
-            name: 'veranda',
+            name: 'backyard',
             ips: ['192.168.1.10'],
             color: 'purple',
             inside: false,
@@ -33,10 +22,17 @@ exports.config = {
         },
         {
             name: 'corridoio_piano_primo',
-            ips: ['192.168.1.11'],
+            ips: ['192.168.1.12'],
             color: 'yellow',
             inside: true,
             floor: 1,
+        },
+        {
+            name: 'corridoio_piano_terra',
+            ips: ['192.168.1.11'],
+            color: 'blu',
+            inside: true,
+            floor: 0,
         },
     ]
 };

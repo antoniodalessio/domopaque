@@ -1,7 +1,7 @@
 "use strict";
 /*
   --------------------------------------------------------------------
-  Actuators, sensors and virtual actuators extends this abstract class
+  Actuators and sensors extends this abstract class
   --------------------------------------------------------------------
 */
 Object.defineProperty(exports, "__esModule", { value: true });

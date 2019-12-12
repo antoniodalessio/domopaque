@@ -1,7 +1,7 @@
 var colors = require('colors');
 var express = require('express')
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
-import { environmentRoutes, googleHomeRoutes, userRoutes } from '@routes'
+import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
 
 
@@ -11,7 +11,7 @@ class App {
   _expressServer
   _config
   _socket
-  mainController
+  _mainController
 
   constructor(config) {
     this.config = config
@@ -47,6 +47,7 @@ class App {
     this.expressApp.use('/api/home/', environmentRoutes(this.mainController));
     this.expressApp.use('/api/googlehome/', googleHomeRoutes())
     this.expressApp.use('/api/user/', userRoutes())
+    this.expressApp.use('/api/scenery/', sceneryRoutes())
   }
 
   onServerStart() {
@@ -101,13 +102,13 @@ class App {
     return this._socket
   }
 
-  /*public set mainController(val) {
+  public set mainController(val) {
     this._mainController = val
   }
 
   public get mainController() {
     return this._mainController
-  }*/
+  }
   
   // async function initCron(homeCTRL) {
   //   const job = new CronJob('0 */1 * * * *', async () => {

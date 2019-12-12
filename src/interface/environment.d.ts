@@ -7,8 +7,7 @@ interface Environment {
   type: string,
   ips: [],
   devices?: Device[],
-  inside: Boolean,
-  virtualActuators: VirtualActuatorController[]
+  inside: Boolean
 }
 
 export default Environment;

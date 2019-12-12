@@ -23,6 +23,7 @@ class ActuatorController extends abstract_controller_1.default {
     getData() {
         let data = {
             name: this.name,
+            friendlyName: this.mainName,
             value: this.value,
             type: 'rele',
             timestamp: Date.now()
