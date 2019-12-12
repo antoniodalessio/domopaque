@@ -34,6 +34,7 @@ class HomeController {
     return HomeController.instance;
   }
 
+
   async create(environments) {
     this.configEnvironments = environments
     this.reset()
