@@ -3,6 +3,10 @@ import Environment from '../interface/environment';
 import SensorController from './sensor.controller';
 import ActuatorController from './actuator.controller';
 
+import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
+
+import { config } from '../config'
+
 class DeviceController{
     
   private _name: string = '';
@@ -14,14 +18,10 @@ class DeviceController{
   private _deviceData: any;
   private error:any;
   
-  constructor(environment, deviceData) {
+  constructor(ip, environment) {
     this.environment = environment;
-    this.deviceData = deviceData;
-    this.name = `${environment.name}_${deviceData.ip}`;
-    this.ip =  deviceData.ip;
-    deviceData.error && (this.error = deviceData.error)
-    this.setSensors()
-    this.setActuators()
+    this.ip = ip;
+    this.name = `${this.environment.name}_${this.ip}`;
   }
 
   getData() {
@@ -61,10 +61,28 @@ class DeviceController{
     return actuators.find((actuator) => {actuator.name == name});
   }
 
-  refresh(deviceData) {
-      this.deviceData = deviceData;
-      this.setSensors()
-      this.setActuators()
+
+  async refresh() {
+    let url = `http://${this.ip}:${config.devicePort}/ping`
+    let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url, {}, `Timeout del server ${url}`)])
+    this.deviceData = await race;
+
+    if (!this.deviceData) {
+      this.deviceData = {
+        name: this.name,
+        deviceName: this.name,
+        ip: this.ip,
+        error: { 
+          msg: `device doesn't responding: ${this.ip} over ${config.fetchTimeout / 1000} seconds`,
+          code: 404,
+        }
+      }        
+    }
+
+    this.deviceData.error && (this.error = this.deviceData.error)
+    this.setSensors()
+    this.setActuators()
+
   }
 
   set environment(environment) {

@@ -206,15 +206,6 @@ class HomeController {
     this._actuators = val;
   }
 
-  // @deprecated
-  /*get virtualActuators() {
-    return this._virtualActuators
-  }
-
-  set virtualActuators(val) {
-    this._virtualActuators = val;
-  }*/
-
   get socket() {
     return this._socket
   }
