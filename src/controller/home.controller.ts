@@ -14,7 +14,7 @@ class HomeController {
   private static instance: HomeController;
 
   private _configEnvironments
-  private _environmentsController
+  private _environmentsController = {}
   private _environments: Environment[]
   private _devices = []
   private _sensors = []
@@ -93,14 +93,9 @@ class HomeController {
   }
 
   getDevices() {
-    return Object.keys(this.environmentsController).map((key) => {
-      return (this.environmentsController[key]).devicesController;
-
-      /*Object.keys(devicesController).forEach((key2) => {
-
-      })
-      //return (this.environmentsController[key]).devicesController;*/
-    })
+    return Object.keys(this.environmentsController).reduce((acc, curr) => {
+      return acc.concat(this.environmentsController[curr].devices)
+    }, [])
   }
 
   /* JSON RESPONSE  */
@@ -134,9 +129,10 @@ class HomeController {
     }
   }
 
-  //@todo
   async getJSONDeviceByName(req, res) {
-    res.status(200).json({});
+    const name = req.params.name
+    let device = this.getDevices().find((device) => { return device.name == name}) 
+    res.status(200).json(device);
   }
 
   async getJSONActuators(req, res) {
