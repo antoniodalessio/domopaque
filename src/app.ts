@@ -19,7 +19,6 @@ class App {
     this.initApp()
   }
 
-
   initApp() {
     this.expressApp.use(express.json());
     this.expressApp.setMaxListeners(0);
