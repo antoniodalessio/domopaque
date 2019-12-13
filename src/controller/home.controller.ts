@@ -19,7 +19,6 @@ class HomeController {
   private _devices = []
   private _sensors = []
   private _actuators = []
-  //private _virtualActuators = []
   private _socket:any
 
   constructor() {
@@ -42,7 +41,6 @@ class HomeController {
       let environmentController = new EnvironmentController(environment)
       this.environmentsController[environment.name] = environmentController
       await environmentController.createDevices()
-      //await environmentController.createVirtualActuators()
       let data = await environmentController.getData()
       this.environments.push(data)
 
@@ -93,23 +91,6 @@ class HomeController {
 
     return actuatorController
   }
-
-  // @deprecated
-  /*
-  listVirtualActuators() {
-    this.virtualActuators = [];
-
-    Object.keys(this.environmentsController).forEach((key) => {
-      this.virtualActuators = this.virtualActuators.concat(this.environmentsController[key].virtualActuatorsController)
-    })
-  }*/
-
-  // @deprecated
-  /*virtualActuatorByName(name: String) {
-    this.virtualActuators.length == 0 && this.listVirtualActuators()
-    let actuatorController = this.virtualActuators.find((actuator) => { return actuator.name == name})
-    return actuatorController
-  }*/
 
   getDevices() {
     return Object.keys(this.environmentsController).map((key) => {
