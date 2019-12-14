@@ -58,7 +58,9 @@ class App {
     try {
       const connectionOptions = await getConnectionOptions();
       // Merge defaultOptions and local options
-      Object.assign(connectionOptions, { 
+      Object.assign(connectionOptions, {
+        username: process.env.POSTEGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
         entities: [`${__dirname}${this.config.modelPath}`]
       });
       await createConnection(connectionOptions)
