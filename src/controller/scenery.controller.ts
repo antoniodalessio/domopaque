@@ -8,10 +8,14 @@ class SceneryController {
 
   }
 
-  async getSceneryById(id: number) {
-    const scenery = await getConnection().getRepository(Scenery).findOne({id},{ relations: ["actuators"] });
-    console.log(scenery)
-    return scenery
+  async getScenery() {
+    const scenario = await getConnection().getRepository(Scenery).find({ relations: ["actuators"] });
+    return scenario
+  }
+
+  async getScenarioById(id: number) {
+    const scenario = await getConnection().getRepository(Scenery).findOne({id},{ relations: ["actuators"] });
+    return scenario
   }
 
 }

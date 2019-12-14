@@ -6,13 +6,12 @@ function initSceneryRoutes(homecontroller) {
 
   let sceneryController = new SceneryController()
 
-  routes.get('/', function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({scenery: 'all'}));
+  routes.get('/', async function (req, res) {
+    res.status(200).json(await sceneryController.getScenery());
   });
 
   routes.get('/:id', async function (req, res) {
-    res.status(200).json(await sceneryController.getSceneryById(req.params.id));
+    res.status(200).json(await sceneryController.getScenarioById(req.params.id));
   });
 
   /*
@@ -21,7 +20,7 @@ function initSceneryRoutes(homecontroller) {
   * Set the status of each device when an event triggered or user set in manual mode
   */
   routes.put('/:id', async function (req, res) {
-    let scenario = await sceneryController.getSceneryById(req.params.id)
+    let scenario = await sceneryController.getScenarioById(req.params.id)
     if (scenario) {
       for (const actuator of scenario.actuators){
         let act = await homecontroller.actuatorByName(actuator.name);
