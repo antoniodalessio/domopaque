@@ -33,7 +33,7 @@ class ActuatorController extends AbstractController{
     let url = `http://${this.data.ip}:${config.devicePort}/${this.mainName}`
     let res:any = await fetchPromise(url, {}, `No data retrived from ${this.mainName}`)
     this.value = res.value
-    this.socket.emit('actuator change', this.getData())
+    gs.socket.emit('actuator change', this.getData())
   }
 
   async setValue(val) {
@@ -48,7 +48,7 @@ class ActuatorController extends AbstractController{
         value: `${val}`
         })
       }, `set value failed on ${this.mainName}`)
-      this.socket.emit('actuator change', this.getData())
+      gs.socket.emit('actuator change', this.getData())
   }
 
   async toggle() {

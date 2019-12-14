@@ -4,6 +4,8 @@ import { createConnection, getConnectionOptions, getConnection } from "typeorm";
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
 
+import gs from './globalScope'
+
 class App {
 
   _expressApp
@@ -18,13 +20,13 @@ class App {
     this.initApp()
   }
 
-  initApp() {
+  async initApp() {
     this.expressApp.use(express.json());
     this.expressApp.setMaxListeners(0);
-    this.mainController = new HomeController()//HomeController.getInstance();
-    this.mainController.create(this.config.environments)
     this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
     this.setupSocket()
+    this.mainController = new HomeController()//HomeController.getInstance();
+    this.mainController.create(this.config.environments)
     this.setupRoutes()
     this.initDB()
   }
@@ -34,9 +36,10 @@ class App {
     io.setMaxListeners(0);
     io.on('connection', (s: any) => {
       this.mainController.socket = s;
+      gs.socket = s
       s.emit('connection init');
       s.on("client response", (res) => {
-        console.log(res)
+        console.log("socket", res)
       })
     });
   }

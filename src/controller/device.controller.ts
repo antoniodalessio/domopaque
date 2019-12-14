@@ -84,7 +84,7 @@ class DeviceController{
       }        
     }
 
-    if (this.socket) {
+    if (gs.socket) {
       gs.socket.emit('device change', {
         deviceData: this.deviceData
       })
