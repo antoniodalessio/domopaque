@@ -3,7 +3,6 @@ var express = require('express')
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
-import gs  from './globalScope'
 
 class App {
 
@@ -34,8 +33,7 @@ class App {
     const io = require('socket.io')(this.expressServer);
     io.setMaxListeners(0);
     io.on('connection', (s: any) => {
-      this.socket = s;
-      gs.socket = s;
+      this.mainController.socket = s;
       s.emit('connection init');
       s.on("client response", (res) => {
         console.log(res)
