@@ -7,6 +7,8 @@ import { fetchPromise, timerPromise } from '@helpers/promiseHelper'
 
 import { config } from '../config'
 
+import gs from '../globalScope'
+
 class DeviceController{
     
   private _name: string = '';
@@ -17,11 +19,14 @@ class DeviceController{
   private _environment: Environment;
   private _deviceData: any;
   private error:any;
+
+  public socket
   
-  constructor(ip, environment) {
+  constructor(ip, environment, socket) {
     this.environment = environment;
     this.ip = ip;
     this.name = `${this.environment.name}_${this.ip}`;
+    this.socket = socket
   }
 
   getData() {
@@ -50,7 +55,7 @@ class DeviceController{
   setActuators() {
     if (this.deviceData.actuators && this.deviceData.actuators.length > 0 ) {
       this.actuatorControllers = this.deviceData.actuators.map((actuator) => {
-        let actuatorControllers = new ActuatorController(this.getData(), actuator)
+        let actuatorControllers = new ActuatorController(this.getData(), actuator, this.socket)
         return actuatorControllers
       })
     }
@@ -77,6 +82,12 @@ class DeviceController{
           code: 404,
         }
       }        
+    }
+
+    if (this.socket) {
+      gs.socket.emit('device change', {
+        deviceData: this.deviceData
+      })
     }
 
     this.deviceData.error && (this.error = this.deviceData.error)

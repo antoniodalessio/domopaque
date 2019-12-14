@@ -38,7 +38,7 @@ class HomeController {
     this.configEnvironments = environments
     this.reset()
     for (const environment of environments) {
-      let environmentController = new EnvironmentController(environment)
+      let environmentController = new EnvironmentController(environment, this.socket)
       this.environmentsController[environment.name] = environmentController
       await environmentController.createDevices()
       let data = await environmentController.getData()
@@ -151,9 +151,6 @@ class HomeController {
     let actuator = await this.actuatorByName(req.body.name);
     actuator.setValue(parseInt(req.body.value))
     await actuator.refresh()
-    if (this.socket) {
-      this.socket.emit('actuator change', {name: req.body.name, value: req.body.value});
-    }
     res.status(200).json(actuator.getData());
   }
 
