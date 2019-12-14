@@ -1,9 +1,9 @@
-import Device from '../interface/device'
-import Environment from '../interface/environment';
+import Device from '@interface/device'
+import Environment from '@interface/environment';
 import SensorController from './sensor.controller';
 import ActuatorController from './actuator.controller';
 
-import { fetchPromise, timerPromise } from './../helpers/promiseHelper'
+import { fetchPromise, timerPromise } from '@helpers/promiseHelper'
 
 import { config } from '../config'
 

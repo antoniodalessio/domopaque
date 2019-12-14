@@ -46,7 +46,7 @@ class App {
     this.expressApp.use('/api/home/', environmentRoutes(this.mainController));
     this.expressApp.use('/api/googlehome/', googleHomeRoutes())
     this.expressApp.use('/api/user/', userRoutes())
-    this.expressApp.use('/api/scenery/', sceneryRoutes())
+    this.expressApp.use('/api/scenery/', sceneryRoutes(this.mainController))
   }
 
   onServerStart() {

@@ -1,4 +1,4 @@
-import Environment from '../interface/environment'
+import Environment from '@interface/environment'
 import DeviceController from './device.controller'
 
 export default class EnvironmentController implements Environment{

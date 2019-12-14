@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinTable } from "typeorm";
 import { Scenery } from "./scenery";
 
 @Entity()
@@ -14,6 +14,8 @@ export class SceneryActuators {
   value: string;
 
   @ManyToOne(type => Scenery, scenery => scenery.actuators)
+  @JoinTable()
   scenery: Scenery;
+
 
 }
