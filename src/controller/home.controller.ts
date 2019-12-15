@@ -19,7 +19,6 @@ class HomeController {
   private _devices = []
   private _sensors = []
   private _actuators = []
-  private _socket:any
 
   constructor() {
     this.reset()
@@ -33,21 +32,16 @@ class HomeController {
     return HomeController.instance;
   }
 
-
   async create(environments) {
     this.configEnvironments = environments
     this.reset()
-    for (const environment of environments) {
-      let environmentController = new EnvironmentController(environment, this.socket)
+
+    Promise.all(environments.map( async (environment) => {
+      let environmentController = new EnvironmentController(environment)
       this.environmentsController[environment.name] = environmentController
-      await environmentController.createDevices()
-      let data = await environmentController.getData()
-      this.environments.push(data)
+      return environmentController.createDevices()
+    }))
 
-      await this.listSensors()
-      await this.listActuators()
-
-    }
   }
 
   reset() {
@@ -100,7 +94,9 @@ class HomeController {
 
   /* JSON RESPONSE  */
   getJSONEnvironments(req, res) {
-    let environments = this.environments
+    let environments = Object.keys(this.environmentsController).map( (key) => { 
+      return this.environmentsController[key].getData()
+    })
     res.status(200).json({ environments });
   }
 
@@ -109,7 +105,7 @@ class HomeController {
     let environmentController = this.environmentsController[name]
     if (environmentController) {
       await environmentController.refresh()
-      let data = await environmentController.getData()
+      let data = environmentController.getData()
       res.status(200).json(data);
     }else{
       res.status(200).json({error: 'no environment found'});
@@ -122,10 +118,12 @@ class HomeController {
 
   async refresh(req, res) {
     try {
-      await this.create(this.configEnvironments)
+      await Promise.all(Object.keys(this.environmentsController).map((key) => {
+        return this.environmentsController[key].refresh()
+      }))
       res.status(200).json({ msg: 'ok' });
-    }catch{
-      res.status(200).json({ msg: 'ok' });
+    }catch(e){
+      res.status(200).json({ msg: 'ko', error: e });
     }
   }
 
@@ -198,15 +196,6 @@ class HomeController {
   set actuators(val) {
     this._actuators = val;
   }
-
-  get socket() {
-    return this._socket
-  }
-
-  set socket(val) {
-    this._socket = val;
-  }
-
 }
 
 export default HomeController;

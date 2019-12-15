@@ -14,6 +14,7 @@ class ActuatorController extends AbstractController{
     this.data = data;
     this.name = `${data.ip}_${actuator.name}`
     this.mainName = `${actuator.name}`
+    this.timestamp = Date.now()
     this.value = actuator.value
   }
 
@@ -23,7 +24,7 @@ class ActuatorController extends AbstractController{
       friendlyName: this.mainName,
       value: this.value,
       type: 'rele',
-      timestamp: Date.now()
+      timestamp: this.timestamp
     }
     return data;
   }
@@ -32,6 +33,7 @@ class ActuatorController extends AbstractController{
     let url = `http://${this.data.ip}:${config.devicePort}/${this.mainName}`
     let res:any = await fetchPromise(url, {}, `No data retrived from ${this.mainName}`)
     this.value = res.value
+    this.timestamp = Date.now()
     this.emitEvent()
   }
 

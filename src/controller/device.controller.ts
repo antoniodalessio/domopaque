@@ -19,14 +19,11 @@ class DeviceController{
   private _environment: Environment;
   private _deviceData: any;
   private error:any;
-
-  public socket
   
-  constructor(ip, environment, socket) {
+  constructor(ip, environment) {
     this.environment = environment;
     this.ip = ip;
     this.name = `${this.environment.name}_${this.ip}`;
-    this.socket = socket
   }
 
   getData() {

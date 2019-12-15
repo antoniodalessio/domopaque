@@ -10,26 +10,23 @@ export default class EnvironmentController implements Environment{
   private _inside: boolean
   private _devicesController = {};
 
-  public socket
-
-	constructor(environment, socket) {
+	constructor(environment) {
     this.name =  environment.name,
 		this.color = environment.color,
     this.type =  environment.type,
 		this.ips =  environment.ips
     this.inside = environment.inside
-    this.socket = socket
   }
 
   async createDevices() {
     for (let ip of this.ips) {
       let deviceName = `${this.name}_${ip}`
-      this.devicesController[deviceName] = new DeviceController(ip, await this.getData(), this.socket)
+      this.devicesController[deviceName] = new DeviceController(ip, await this.getData())
       await this.devicesController[deviceName].refresh()
     }
   }
 
-	async getData() {
+	getData() {
 
     let data: Environment = {
       name: this.name,
@@ -48,7 +45,6 @@ export default class EnvironmentController implements Environment{
       await this.devicesController[keys].refresh()
     }
   }
-
 
   get name() {
     return this._name;
