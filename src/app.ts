@@ -1,9 +1,10 @@
 var colors = require('colors');
 var express = require('express')
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
-import { environmentRoutes, googleHomeRoutes, userRoutes } from '@routes'
+import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
 
+import gs from './globalScope'
 
 class App {
 
@@ -11,7 +12,7 @@ class App {
   _expressServer
   _config
   _socket
-  mainController
+  _mainController
 
   constructor(config) {
     this.config = config
@@ -19,14 +20,14 @@ class App {
     this.initApp()
   }
 
-  initApp() {
+  async initApp() {
     this.expressApp.use(express.json());
     this.expressApp.setMaxListeners(0);
+    this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
+    this.setupSocket()
     this.mainController = new HomeController()//HomeController.getInstance();
     this.mainController.create(this.config.environments)
-    this.setupSocket()
     this.setupRoutes()
-    this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
     this.initDB()
   }
 
@@ -34,10 +35,11 @@ class App {
     const io = require('socket.io')(this.expressServer);
     io.setMaxListeners(0);
     io.on('connection', (s: any) => {
-      this.socket = s;
+      this.mainController.socket = s;
+      gs.socket = s
       s.emit('connection init');
       s.on("client response", (res) => {
-        console.log(res)
+        console.log("socket", res)
       })
     });
   }
@@ -46,6 +48,7 @@ class App {
     this.expressApp.use('/api/home/', environmentRoutes(this.mainController));
     this.expressApp.use('/api/googlehome/', googleHomeRoutes())
     this.expressApp.use('/api/user/', userRoutes())
+    this.expressApp.use('/api/scenery/', sceneryRoutes(this.mainController))
   }
 
   onServerStart() {
@@ -57,7 +60,9 @@ class App {
     try {
       const connectionOptions = await getConnectionOptions();
       // Merge defaultOptions and local options
-      Object.assign(connectionOptions, { 
+      Object.assign(connectionOptions, {
+        username: process.env.POSTEGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
         entities: [`${__dirname}${this.config.modelPath}`]
       });
       await createConnection(connectionOptions)
@@ -100,13 +105,13 @@ class App {
     return this._socket
   }
 
-  /*public set mainController(val) {
+  public set mainController(val) {
     this._mainController = val
   }
 
   public get mainController() {
     return this._mainController
-  }*/
+  }
   
   // async function initCron(homeCTRL) {
   //   const job = new CronJob('0 */1 * * * *', async () => {

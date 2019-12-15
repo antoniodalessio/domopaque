@@ -8,7 +8,8 @@
     "start": "npm run tsc && node dist/index.js",
     "build": "tsc",
     "tsc": "tsc",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "migrate": "ts-node ./node_modules/typeorm/cli.js migration:run",
+    "migrate-revert": "ts-node ./node_modules/typeorm/cli.js migration:revert"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
     "rebuild": "^0.1.2",
     "socket.io": "^2.3.0",
     "sudo": "^1.0.3",
+    "ts-node": "^8.5.4",
     "typeorm": "^0.2.20",
     "typescript": "^3.6.3"
   },

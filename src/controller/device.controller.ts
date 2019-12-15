@@ -1,7 +1,13 @@
-import Device from '../interface/device'
-import Environment from '../interface/environment';
+import Device from '@interface/device'
+import Environment from '@interface/environment';
 import SensorController from './sensor.controller';
 import ActuatorController from './actuator.controller';
+
+import { fetchPromise, timerPromise } from '@helpers/promiseHelper'
+
+import { config } from '../config'
+
+import gs from '../globalScope'
 
 class DeviceController{
     
@@ -13,15 +19,14 @@ class DeviceController{
   private _environment: Environment;
   private _deviceData: any;
   private error:any;
+
+  public socket
   
-  constructor(environment, deviceData) {
+  constructor(ip, environment, socket) {
     this.environment = environment;
-    this.deviceData = deviceData;
-    this.name = `${environment.name}_${deviceData.ip}`;
-    this.ip =  deviceData.ip;
-    deviceData.error && (this.error = deviceData.error)
-    this.setSensors()
-    this.setActuators()
+    this.ip = ip;
+    this.name = `${this.environment.name}_${this.ip}`;
+    this.socket = socket
   }
 
   getData() {
@@ -50,7 +55,7 @@ class DeviceController{
   setActuators() {
     if (this.deviceData.actuators && this.deviceData.actuators.length > 0 ) {
       this.actuatorControllers = this.deviceData.actuators.map((actuator) => {
-        let actuatorControllers = new ActuatorController(this.getData(), actuator)
+        let actuatorControllers = new ActuatorController(this.getData(), actuator, this.socket)
         return actuatorControllers
       })
     }
@@ -61,10 +66,34 @@ class DeviceController{
     return actuators.find((actuator) => {actuator.name == name});
   }
 
-  refresh(deviceData) {
-      this.deviceData = deviceData;
-      this.setSensors()
-      this.setActuators()
+
+  async refresh() {
+    let url = `http://${this.ip}:${config.devicePort}/ping`
+    let race = Promise.race([timerPromise(config.fetchTimeout), fetchPromise(url, {}, `Timeout del server ${url}`)])
+    this.deviceData = await race;
+
+    if (!this.deviceData) {
+      this.deviceData = {
+        name: this.name,
+        deviceName: this.name,
+        ip: this.ip,
+        error: { 
+          msg: `device doesn't responding: ${this.ip} over ${config.fetchTimeout / 1000} seconds`,
+          code: 404,
+        }
+      }        
+    }
+
+    if (gs.socket) {
+      gs.socket.emit('device change', {
+        deviceData: this.deviceData
+      })
+    }
+
+    this.deviceData.error && (this.error = this.deviceData.error)
+    this.setSensors()
+    this.setActuators()
+
   }
 
   set environment(environment) {

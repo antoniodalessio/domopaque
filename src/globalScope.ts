@@ -4,7 +4,7 @@ class GlobalScope {
 
 
   public set socket(val:any) {
-    this.socket = val
+    this._socket = val
   }
 
   public get socket() {

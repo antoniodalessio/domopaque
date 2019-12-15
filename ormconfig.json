@@ -2,14 +2,14 @@
     "type": "postgres",
     "host": "localhost",
     "port": 5432,
-    "username": "postgres",
-    "password": "admin",
     "database": "domopaque",
     "synchronize": true,
     "logging": false,
+    "entities": ["dist/model/*.js"],
+    "migrations": ["dist/migration/*.js"],
     "cli": {
       "entitiesDir": "src/model",
       "subscribersDir": "src/subscriber",
-      "migrationsDir:": "src/migration"
+      "migrationsDir": "src/migration"
     }
  }

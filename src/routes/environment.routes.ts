@@ -11,9 +11,6 @@ function initEnvironmentRoutes(homeController: HomeController) {
   routes.get('/actuators', (req, res) => { homeController.getJSONActuators(req, res) })
   routes.get('/actuators/:name', (req, res) => { homeController.getJSONActuatorByName(req, res) })
   routes.post('/actuators', (req, res) => { homeController.setJSONactuatorValue(req, res) })
-  routes.get('/virtualactuators/:name', (req, res) => {  homeController.getJSONVirtualActuatorByName(req, res) })
-  routes.post('/virtualactuators', (req, res) => { homeController.setJSONVirtualActuatorState(req, res) })
-  routes.post('/virtualactuators/setValue', (req, res) => { homeController.setJSONVirtualActuatorValue(req, res) })
 }
 
 export default (homeCTRL) => {
