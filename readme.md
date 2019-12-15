@@ -119,18 +119,7 @@ Example
 ```
 
 
-GENERATE MIGRATION
-```
-npm run typeorm migration:generate -- -n migrationNameHere
-```
-
-RUN MIGRATION
-```
-npm run typeorm migration:run
-```
-
-You can create a new entity using CLI:
-
-```
-typeorm entity:create -n User
-```
+![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard4.jpeg)
+![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard1.jpeg)
+![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard2.jpeg)
+![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard3.jpeg)
