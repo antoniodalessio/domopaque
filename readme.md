@@ -107,7 +107,7 @@ Example
           "sensors": [],
           "actuators": [],
           "error": {
-            "msg": "device doesn't responding: 192.168.1.11 over 4 seconds",
+            "msg": "the device 192.168.1.11 did not respond after 4 seconds",
             "code": 404
           }
         }
