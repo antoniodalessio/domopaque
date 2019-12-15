@@ -78,7 +78,7 @@ class DeviceController{
         deviceName: this.name,
         ip: this.ip,
         error: { 
-          msg: `device doesn't responding: ${this.ip} over ${config.fetchTimeout / 1000} seconds`,
+          msg: `the device ${this.ip} did not respond after ${config.fetchTimeout / 1000} seconds`,
           code: 404,
         }
       }        
