@@ -3,7 +3,7 @@ import HomeController from "@controller/home.controller";
 const routes = require('express').Router();
 
 function initEnvironmentRoutes(homeController: HomeController) {
-  routes.get('/refresh', homeController.refresh)
+  routes.get('/refresh', (req, res) => homeController.refresh(req, res))
   routes.get('/environments', (req, res) => { homeController.getJSONEnvironments(req, res) })
   routes.get('/environments/:name', (req, res) => { homeController.getJSONEnvironmentByName(req, res)})
   routes.get('/devices', (req, res) => { homeController.getJSONDevices(req, res) })
