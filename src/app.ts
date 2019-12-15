@@ -34,9 +34,10 @@ class App {
   setupSocket() {
     const io = require('socket.io')(this.expressServer);
     io.setMaxListeners(0);
+    gs.socket = io;
     io.on('connection', (s: any) => {
       this.mainController.socket = s;
-      gs.socket = s
+      //gs.socket = s
       s.emit('connection init');
       s.on("client response", (res) => {
         console.log("socket", res)
