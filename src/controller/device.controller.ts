@@ -55,7 +55,7 @@ class DeviceController{
   setActuators() {
     if (this.deviceData.actuators && this.deviceData.actuators.length > 0 ) {
       this.actuatorControllers = this.deviceData.actuators.map((actuator) => {
-        let actuatorControllers = new ActuatorController(this.getData(), actuator, this.socket)
+        let actuatorControllers = new ActuatorController(this.getData(), actuator)
         return actuatorControllers
       })
     }
