@@ -25,7 +25,7 @@ class App {
     this.expressApp.setMaxListeners(0);
     this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
     this.setupSocket()
-    this.mainController = new HomeController()//HomeController.getInstance();
+    this.mainController = HomeController.getInstance();
     this.mainController.create(this.config.environments)
     this.setupRoutes()
     this.initDB()
@@ -36,8 +36,6 @@ class App {
     io.setMaxListeners(0);
     gs.socket = io;
     io.on('connection', (s: any) => {
-      this.mainController.socket = s;
-      //gs.socket = s
       s.emit('connection init');
       s.on("client response", (res) => {
         console.log("socket", res)
