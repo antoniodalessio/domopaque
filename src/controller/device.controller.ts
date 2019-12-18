@@ -79,6 +79,8 @@ class DeviceController{
           code: 404,
         }
       }        
+    }else{
+      this.error = null
     }
 
     if (gs.socket) {
