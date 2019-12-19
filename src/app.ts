@@ -3,6 +3,7 @@ var express = require('express')
 var expressAccessToken = require('express-access-token')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser');
+var socketio = require('socket.io')
 
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
@@ -26,17 +27,20 @@ class App {
   }
 
   async initApp() {
-    //this.expressApp.use(express.json());
-    this.expressApp.use(cookieParser());
-    this.expressApp.use(bodyParser.json());
-    this.expressApp.use(bodyParser.urlencoded({extended: true}));
-    this.expressApp.setMaxListeners(0);
-    this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
+    this.setupExpress()
     this.setupSocket()
     this.mainController = HomeController.getInstance();
     this.mainController.create(this.config.environments)
     this.setupRoutes()
     this.initDB()
+  }
+
+  setupExpress() {
+    this.expressApp.use(cookieParser());
+    this.expressApp.use(bodyParser.json());
+    this.expressApp.use(bodyParser.urlencoded({extended: true}));
+    this.expressApp.setMaxListeners(0);
+    this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
   }
 
   firewall = (req, res, next) => {
@@ -46,13 +50,13 @@ class App {
   };
 
   setupSocket() {
-    const io = require('socket.io')(this.expressServer);
+    const io = socketio(this.expressServer);
     io.setMaxListeners(0);
     gs.socket = io;
     io.on('connection', (s: any) => {
       s.emit('connection init');
       s.on("client response", (res) => {
-        console.log("socket", res)
+        console.log(colors.green("socket", res))
       })
     });
   }
