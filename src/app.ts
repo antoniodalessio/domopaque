@@ -1,5 +1,9 @@
 var colors = require('colors');
 var express = require('express')
+var expressAccessToken = require('express-access-token')
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser');
+
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
@@ -13,6 +17,7 @@ class App {
   _config
   _socket
   _mainController
+  _accessTokens = [ process.env.TOKEN ];
 
   constructor(config) {
     this.config = config
@@ -21,7 +26,10 @@ class App {
   }
 
   async initApp() {
-    this.expressApp.use(express.json());
+    //this.expressApp.use(express.json());
+    this.expressApp.use(cookieParser());
+    this.expressApp.use(bodyParser.json());
+    this.expressApp.use(bodyParser.urlencoded({extended: true}));
     this.expressApp.setMaxListeners(0);
     this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
     this.setupSocket()
@@ -30,6 +38,12 @@ class App {
     this.setupRoutes()
     this.initDB()
   }
+
+  firewall = (req, res, next) => {
+    const authorized = this.accessTokens.includes(req.accessToken);
+    if(!authorized) return res.status(403).send('Forbidden');
+    next();
+  };
 
   setupSocket() {
     const io = require('socket.io')(this.expressServer);
@@ -44,10 +58,10 @@ class App {
   }
 
   setupRoutes() {
-    this.expressApp.use('/api/home/', environmentRoutes(this.mainController));
-    this.expressApp.use('/api/googlehome/', googleHomeRoutes())
-    this.expressApp.use('/api/user/', userRoutes())
-    this.expressApp.use('/api/scenery/', sceneryRoutes(this.mainController))
+    this.expressApp.use('/api/home/', expressAccessToken, this.firewall, environmentRoutes(this.mainController));
+    this.expressApp.use('/api/googlehome/', expressAccessToken, this.firewall, googleHomeRoutes())
+    this.expressApp.use('/api/user/', expressAccessToken, this.firewall, userRoutes())
+    this.expressApp.use('/api/scenery/', expressAccessToken, this.firewall, sceneryRoutes(this.mainController))
   }
 
   onServerStart() {
@@ -110,6 +124,14 @@ class App {
 
   public get mainController() {
     return this._mainController
+  }
+
+  public get accessTokens() {
+    return this._accessTokens
+  }
+
+  public set accessTokens(val) {
+    this._accessTokens = val
   }
   
   // async function initCron(homeCTRL) {
