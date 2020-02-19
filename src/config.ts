@@ -32,5 +32,12 @@ export const config = {
 			inside: true,
 			floor: 0,
 		},
+		{
+			name: 'veranda',
+			ips: ['192.168.1.9'],
+			color: 'black',
+			inside: false,
+			floor: 0,
+		},
 	]
 }
