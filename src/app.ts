@@ -45,6 +45,7 @@ class App {
 
   firewall = (req, res, next) => {
     const authorized = this.accessTokens.includes(req.accessToken);
+    console.log("authorized", authorized)
     if(!authorized) return res.status(403).send('Forbidden');
     next();
   };
