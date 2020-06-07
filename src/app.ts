@@ -4,12 +4,14 @@ var expressAccessToken = require('express-access-token')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser');
 var socketio = require('socket.io')
+var CronJob = require('cron').CronJob;
 
 import { createConnection, getConnectionOptions, getConnection } from "typeorm";
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
 
 import gs from './globalScope'
+import { SceneryController } from "@controller";
 
 class App {
 
@@ -33,6 +35,7 @@ class App {
     this.mainController.create(this.config.environments)
     this.setupRoutes()
     this.initDB()
+    this.initCron(this.mainController)
   }
 
   setupExpress() {
@@ -45,7 +48,6 @@ class App {
 
   firewall = (req, res, next) => {
     const authorized = this.accessTokens.includes(req.accessToken);
-    console.log("authorized", authorized)
     if(!authorized) return res.status(403).send('Forbidden');
     next();
   };
@@ -79,8 +81,9 @@ class App {
       const connectionOptions = await getConnectionOptions();
       // Merge defaultOptions and local options
       Object.assign(connectionOptions, {
-        username: process.env.POSTEGRES_USER,
+        username: process.env.POSTGRES_USER,
         password: process.env.POSTGRES_PASSWORD,
+        host: process.env.POSTGRES_HOST,
         entities: [`${__dirname}${this.config.modelPath}`]
       });
       await createConnection(connectionOptions)
@@ -88,6 +91,18 @@ class App {
     }catch(e) {
       console.log(colors.red("I can't estabileshed connection with remote db. " + e))
     }
+  }
+
+  async initCron(homeCTRL) {
+    const job = new CronJob('30 20 * * *', async () => {
+      const d = new Date();
+  
+      console.log('At time:', d);
+      const sceneryCTRL = new SceneryController();
+      await sceneryCTRL.callScenario(2, homeCTRL)
+  
+    }, null, true, "Europe/Berlin");
+    job.start();
   }
 
   // GETTER & SETTER
@@ -139,43 +154,7 @@ class App {
     this._accessTokens = val
   }
   
-  // async function initCron(homeCTRL) {
-  //   const job = new CronJob('0 */1 * * * *', async () => {
-  //     const d = new Date();
-  
-  //     console.log('At time:', d);
-  //     //todo
-  //     await homeCTRL.create(config.environments)
-  //     await homeCTRL.listSensors()
-  //     await insertInSensor(homeCTRL)
-  
-  //   });
-  //   job.start();
-  // }
-  
-  
-  // async function insertInSensor(homeCTRL) {
-  
-  //   let sensorsData = []
-    
-  //   for (const sensor of homeCTRL.sensors) {
-  //     const sensorData = sensor.getData()
-  //     sensorsData.push({
-  //       name: sensorData.name,
-  //       timestamp: sensorData.timestamp.toString(),
-  //       value: sensorData.value
-  //     })
-  //   }
-  
-  //   console.log("insertInSensor")
-  
-  //   /*await getConnection()
-  //     .createQueryBuilder()
-  //     .insert()
-  //     .into(SensorReadings)
-  //     .values(sensorsData)
-  //     .execute();*/
-  // }
+
 
 }
 

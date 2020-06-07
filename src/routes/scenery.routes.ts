@@ -20,17 +20,9 @@ function initSceneryRoutes(homecontroller) {
   * Set the status of each device when an event triggered or user set in manual mode
   */
   routes.put('/:id', async function (req, res) {
-    let scenario = await sceneryController.getScenarioById(req.params.id)
-    if (scenario) {
-      for (const actuator of scenario.actuators){
-        let act = await homecontroller.actuatorByName(actuator.name);
-        act.setValue(parseInt(actuator.value))
-        await act.refresh()
-      }
-    }
+    await sceneryController.callScenario(req.params.id, homecontroller)
     await homecontroller.refresh()
     res.status(200).json(homecontroller.environments);
-    
   });
 
 }

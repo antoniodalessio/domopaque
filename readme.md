@@ -123,3 +123,8 @@ Example
 ![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard1.jpeg)
 ![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard2.jpeg)
 ![Backyard1](https://github.com/antoniodalessio/domopaque/blob/develop/src/assets/backyard3.jpeg)
+
+
+
+# Use node v 8.9.0
+As node on raspbian has 8.9.0 version you need to use this one.
