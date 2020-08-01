@@ -8,6 +8,7 @@
     "start": "npm run tsc && node dist/index.js",
     "build": "tsc",
     "tsc": "tsc",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "migrate": "tsc && ts-node ./node_modules/typeorm/cli.js migration:run",
     "migrate-revert": "ts-node ./node_modules/typeorm/cli.js migration:revert"
   },

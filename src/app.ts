@@ -6,12 +6,14 @@ var bodyParser = require('body-parser');
 var socketio = require('socket.io')
 var CronJob = require('cron').CronJob;
 
-import { createConnection, getConnectionOptions, getConnection } from "typeorm";
+import { createConnection, getConnectionOptions, getConnection, getRepository } from "typeorm";
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
 
 import gs from './globalScope'
 import { SceneryController } from "@controller";
+import { SceneryTimers } from './model/scenery_timers'
+import { Scenery } from './model/scenery'
 
 class App {
 
@@ -33,10 +35,11 @@ class App {
     this.setupSocket()
     this.mainController = HomeController.getInstance();
     this.mainController.create(this.config.environments)
-    this.setupRoutes()
-    this.initDB()
-    this.initCron(this.mainController)
+    await this.initDB()
+    await this.setupRoutes()
   }
+
+  
 
   setupExpress() {
     this.expressApp.use(cookieParser());
@@ -91,18 +94,6 @@ class App {
     }catch(e) {
       console.log(colors.red("I can't estabileshed connection with remote db. " + e))
     }
-  }
-
-  async initCron(homeCTRL) {
-    const job = new CronJob('30 20 * * *', async () => {
-      const d = new Date();
-  
-      console.log('At time:', d);
-      const sceneryCTRL = new SceneryController();
-      await sceneryCTRL.callScenario(2, homeCTRL)
-  
-    }, null, true, "Europe/Berlin");
-    job.start();
   }
 
   // GETTER & SETTER
