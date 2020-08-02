@@ -31,7 +31,7 @@ function initSceneryRoutes(homecontroller: any) {
   });
 
   routes.put('/timer/:id', async function (req: any, res: any) {
-    const response = await sceneryController.setTimer(req.params.id, req.body.time, req.body.active)
+    const response = await sceneryController.setTimer(req.params.id, req.body)
     res.status(200).json(response);
   });
 

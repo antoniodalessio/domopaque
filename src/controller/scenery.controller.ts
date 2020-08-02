@@ -63,8 +63,8 @@ class SceneryController {
     return scenarioTimer
   }
 
-  async setTimer(idTimer: any, time: string, active: boolean) {
-    await getConnection().getRepository(SceneryTimers).update(idTimer, { timer: time, active: active });
+  async setTimer(idTimer: any, data: any) {
+    await getConnection().getRepository(SceneryTimers).update(idTimer, { timer: data.timer, active: data.active, name: data.name });
     await this.setScenarioTimers()
     return await getConnection().getRepository(SceneryTimers).find()
   }
