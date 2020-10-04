@@ -6,7 +6,7 @@ export const config = {
 	environments: [
 		{
 			name: 'soggiorno',
-			ips: ['192.168.1.5', 'domopaque_soggiorno'],
+			ips: ['192.168.1.5', '192.168.1.15'],
 			color: 'green',
 			inside: true,
 			floor: 0,
