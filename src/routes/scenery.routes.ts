@@ -20,34 +20,34 @@ function initSceneryRoutes(homecontroller: any) {
   * Set the status of each device when an event triggered or user set in manual mode
   */
   routes.put('/:id', async function (req: any, res: any) {
-    await sceneryController.callScenario(req.params.id)
-    await homecontroller.refresh()
-    res.status(200).json(homecontroller.environments);
+      await sceneryController.callScenario(req.params.id)
+      await homecontroller.refresh()
+      res.status(200).json(homecontroller.environments);
   });
 
   routes.get('/timer/list', async function (req: any, res: any) {
-    const response = await sceneryController.getTimer(null)
-    res.status(200).json(response);
+      const response = await sceneryController.getTimers()
+      res.status(200).json(response);
   });
 
   routes.put('/timer/:id', async function (req: any, res: any) {
-    const response = await sceneryController.setTimer(req.params.id, req.body)
-    res.status(200).json(response);
+      const response = await sceneryController.setTimer(req.params.id, req.body)
+      res.status(200).json(response);
   });
 
   routes.get('/timer/:id', async function (req: any, res: any) {
-    const response = await sceneryController.getTimer(req.params.id)
-    res.status(200).json(response);
+      const response = await sceneryController.getTimer(req.params.id)
+      res.status(200).json(response);
   });
 
   routes.delete('/timer/:id', async function (req: any, res: any) {
-    const response = await sceneryController.deleteTimer(req.params.id)
-    res.status(200).json(response);
+      const response = await sceneryController.deleteTimer(req.params.id)
+      res.status(200).json(response);
   });
 
   routes.post('/timer/', async function (req: any, res: any) {
-    const response = await sceneryController.newTimer(req.body.name, req.body.time, req.body.active, req.body.sceneryid)
-    res.status(200).json(response);
+      const response = await sceneryController.newTimer(req.body.name, req.body.time, req.body.active, req.body.sceneryid)
+      res.status(200).json(response);
   });
 
 }

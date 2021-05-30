@@ -4,16 +4,15 @@ var expressAccessToken = require('express-access-token')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser');
 var socketio = require('socket.io')
-var CronJob = require('cron').CronJob;
+const mongoose = require('mongoose');
 
-import { createConnection, getConnectionOptions, getConnection, getRepository } from "typeorm";
+import { Types } from 'mongoose';
+import {Scenery, IScenery, SceneryTimers, ISceneryTimers, SceneryActuators, ISceneryActuators } from './model'
+
 import { environmentRoutes, googleHomeRoutes, userRoutes, sceneryRoutes } from '@routes'
 import HomeController from '@controller/home.controller'
 
 import gs from './globalScope'
-import { SceneryController } from "@controller";
-import { SceneryTimers } from './model/scenery_timers'
-import { Scenery } from './model/scenery'
 
 class App {
 
@@ -35,8 +34,8 @@ class App {
     this.setupSocket()
     this.mainController = HomeController.getInstance();
     this.mainController.create(this.config.environments)
-    await this.initDB()
-    await this.setupRoutes()
+    this.initMongoose()
+    this.setupRoutes()
   }
 
   
@@ -49,7 +48,7 @@ class App {
     this.expressServer = this.expressApp.listen(this.config.serverPort, () => { this.onServerStart() });
   }
 
-  firewall = (req, res, next) => {
+  firewall = (req:any, res:any, next:any) => {
     const authorized = this.accessTokens.includes(req.accessToken);
     if(!authorized) return res.status(403).send('Forbidden');
     next();
@@ -79,22 +78,81 @@ class App {
     this.expressApp.emit("appStarted");
   }
 
-  async initDB() {
-    try {
-      const connectionOptions = await getConnectionOptions();
-      // Merge defaultOptions and local options
-      Object.assign(connectionOptions, {
-        username: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD,
-        host: process.env.POSTGRES_HOST,
-        entities: [`${__dirname}${this.config.modelPath}`]
-      });
-      await createConnection(connectionOptions)
-      console.log(colors.green(`DB sucessfully connected`))
-    }catch(e) {
-      console.log(colors.red("I can't estabileshed connection with remote db. " + e))
-    }
+  async initMongoose() {
+    let connection = await mongoose.connect(`${process.env.DB_HOST}${process.env.DB_NAME}`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
+    await this.insertData()
   }
+
+  async insertData() {
+
+    //await Scenery.create({ name: 'notte' });
+    // const idTimer = new Types.ObjectId()
+    // const timer1 = await SceneryTimers.create({_id: idTimer, name: 'accensione luci sera', timer: '00 20 * * *', active: true})
+    
+    
+    // let sactuators = []
+
+    // let idActuator = new Types.ObjectId()
+    // let actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.11_luce_giardino', value: "0" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.11_luce_porta', value: "0" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator,name: '192.168.1.5_main_light', value: "0" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator,name: '192.168.1.10_backyard_main_light', value: "0" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.10_backyard_door_light', value: "0" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.9_veranda_main_light', value: "0" });
+    // sactuators.push(idActuator)
+
+    // const idScenery = new Types.ObjectId()
+    // await Scenery.create({ _id: idScenery, name: 'sera', actuators: sactuators, timers: [idTimer] });
+
+
+    // const test = await Scenery.find().populate('actuators timers')
+    // console.log(test)
+
+
+    // let sactuators = []
+
+    // let idActuator = new Types.ObjectId()
+    // let actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.11_luce_giardino', value: "1" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.11_luce_porta', value: "1" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.5_main_light', value: "1" });
+    // sactuators.push(idActuator)
+
+    // idActuator = new Types.ObjectId()
+    // actuator = SceneryActuators.create({ _id: idActuator, name: '192.168.1.9_veranda_main_light', value: "1" });
+    // sactuators.push(idActuator)
+
+    // const idScenery = new Types.ObjectId()
+    // await Scenery.create({ _id: idScenery, name: 'notte', actuators: sactuators });
+
+
+    
+  }
+
 
   // GETTER & SETTER
   public set expressApp(val) {
